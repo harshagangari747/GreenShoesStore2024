@@ -4,17 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Customer {
-	@Column(nullable = false)
-	private String name;
-	@Id @Column(unique = true)
-	private String username;
-	@Column(unique = true)
-	private String email;
-	//private String password;
+	@Id 
+	private Long customerId;
+	@OneToOne
+	@MapsId
+	@JoinColumn(referencedColumnName ="userId")
+	private UserProfile userProfile;
 	@Column(length=10)
 	private String mobile;
 	@OneToOne
@@ -22,36 +22,13 @@ public class Customer {
 	private Address address;
 	private boolean isAuthenticated;
 	@OneToOne
+	@JoinColumn(name = "paymentId")
 	private PaymentInformation paymentInformation;
 	public Address getAddress() {
 		return address;
 	}
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-//	public String getPassword() {
-//		return password;
-//	}
-//	public void setPassword(String password) {
-//		this.password = password;
-//	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public String getMobile() {
 		return mobile;
