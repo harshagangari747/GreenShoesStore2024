@@ -1,26 +1,26 @@
 package com.store.greenShoes.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-public class Credentials {
+public class UserProfile {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-	@OneToOne
-	private Customer customer;
+	private Long userId;
+	@Column(unique = true)
 	private String userName;
 	private String password;
 	private String role;
-	public Customer getCustomer() {
-		return customer;
-	}
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+	@Column(unique = true)
+	private String email;
+	@Column(nullable = false)
+	private String fullName;
 	public String getUserName() {
 		return userName;
 	}
