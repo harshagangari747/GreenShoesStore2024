@@ -1,9 +1,14 @@
 package com.store.greenShoes.model;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,12 +28,15 @@ public class Product {
 	private Double rating;
 	
 	private String vendorName;
-	
-	private String category;
+	@ManyToOne
+	@JoinColumn(name = "catagoryID")
+	private Category category;
 	
 	private String description;
 	
 	private Long quantity;
+	@OneToMany(mappedBy = "product")
+	private List<Size> sizes;
 
 	public Long getQuantity() {
 		return quantity;
@@ -90,11 +98,13 @@ public class Product {
 		this.vendorName = vendorName;
 	}
 
-	public String getCategory() {
+	
+
+	public Category getCategory() {
 		return category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 
