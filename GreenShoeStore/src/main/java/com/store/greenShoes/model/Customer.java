@@ -15,6 +15,18 @@ public class Customer {
 	@MapsId
 	@JoinColumn(referencedColumnName ="userId")
 	private UserProfile userProfile;
+	public Long getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+	public UserProfile getUserProfile() {
+		return userProfile;
+	}
+	public void setUserProfile(UserProfile userProfile) {
+		this.userProfile = userProfile;
+	}
 	@Column(length=10)
 	private String mobile;
 	@OneToOne

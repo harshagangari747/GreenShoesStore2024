@@ -1,10 +1,15 @@
 package com.store.greenShoes.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.repository.ProductRepository;
@@ -12,14 +17,24 @@ import com.store.greenShoes.repository.ProductRepository;
 public class ProductService {
 	@Autowired
 	ProductRepository productRepository;
-
+	String projectDirectory = System.getProperty("user.dir");
+	private final String FOLDER_PATH=projectDirectory+"/Images/";
 	//CRUD
 	public List<Product> getAllProducts(Integer page, Integer size) {
 		PageRequest pageable = PageRequest.of(page, size);
 		return productRepository.findAll(pageable).getContent();
 	}
 
-	public Product postProduct(Product product) {
+	public Product postProduct(Product product, List<MultipartFile> files )  {
+		String picture="";
+		for(MultipartFile file: files) {
+		try {
+			picture= this.uploadImageToFileSystem(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}}
+		product.setPicture(picture);
 		return productRepository.save(product);
 	}
 	
@@ -28,27 +43,24 @@ public class ProductService {
 	}
 
 	public Product updateProduct(Long id, Product product) {
-//		Product newProduct = productRepository.getById(id);
-//		newProduct.setName(product.getName());
-//		newProduct.setPicture(product.getPicture());
-//		newProduct.setPrice(product.getPrice());
-//		newProduct.setRating(product.getRating());
-//		newProduct.setVendorName(product.getVendorName());
-//		newProduct.setCategory(product.getCategory());
-//		newProduct.setDescription(product.getDescription());
-//		newProduct.setQuantity(product.getQuantity());
-//		return productRepository.save(newProduct);
-		return new Product();
+		Product newProduct = productRepository.getReferenceById(id);
+		newProduct.setName(product.getName());
+		newProduct.setPicture(product.getPicture());
+		newProduct.setPrice(product.getPrice());
+		newProduct.setRating(product.getRating());
+		newProduct.setVendorName(product.getVendorName());
+		newProduct.setCategory(product.getCategory());
+		newProduct.setDescription(product.getDescription());
+		newProduct.setQuantity(product.getQuantity());
+		return productRepository.save(newProduct);
 	}
 
 	public void deleteProduct(Long id) {
 		productRepository.deleteById(id);
 	}
 	
-	//others
-	@SuppressWarnings("deprecation")
 	public Product getProductById(Long id) {
-		return productRepository.getById(id);
+		return productRepository.getReferenceById(id);
 	}
 
 	public List<Product> getProductsByCategory(Integer page, Integer size, String category) {
@@ -61,8 +73,25 @@ public class ProductService {
 	}
 	
 	public Long getProductQuantity(Long id) {
-		//return productRepository.getById(id).getQuantity();
-		return 1L;
+		return productRepository.getReferenceById(id).getQuantity();
 	}
+	public void print() {
+		System.out.println(FOLDER_PATH);
+	}
+	
+	public String uploadImageToFileSystem(MultipartFile file) throws IOException {
+        String filePath=FOLDER_PATH+file.getOriginalFilename();
+
+        file.transferTo(new File(filePath));
+        return filePath;
+
+    }
+
+    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
+        Optional<Product> fileData = productRepository.findByPicture(fileName);
+        String filePath=fileData.get().getPicture();
+        byte[] images = Files.readAllBytes(new File(filePath).toPath());
+        return images;
+    }
 
 }

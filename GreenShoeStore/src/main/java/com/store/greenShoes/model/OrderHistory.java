@@ -13,26 +13,26 @@ public class OrderHistory {
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name="customerId")
-	private Customer customerId;
+	private Customer customer;
 	@ManyToOne
 	@JoinColumn(name="oderId")
-	private Orders orderId;
+	private Orders order;
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	public Orders getOrder() {
+		return order;
+	}
+	public void setOrder(Orders order) {
+		this.order = order;
+	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Customer getCustomerId() {
-		return customerId;
-	}
-	public void setCustomerId(Customer customerId) {
-		this.customerId = customerId;
-	}
-	public Orders getOrderId() {
-		return orderId;
-	}
-	public void setOrderId(Orders orderId) {
-		this.orderId = orderId;
 	}
 }
