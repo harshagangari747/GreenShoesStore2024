@@ -6,4 +6,6 @@ import com.store.greenShoes.model.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long>{
 
+	Category getByCategory(String name);
+
 }

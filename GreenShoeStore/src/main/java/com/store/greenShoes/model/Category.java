@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 public class Category {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long categoryID;
-	private String Category;
+	private String category;
 	public Long getCategoryID() {
 		return categoryID;
 	}
@@ -17,10 +17,11 @@ public class Category {
 		this.categoryID = categoryID;
 	}
 	public String getCategory() {
-		return Category;
+		return category;
 	}
 	public void setCategory(String category) {
-		Category = category;
+		this.category = category;
 	}
+
 	
 }
