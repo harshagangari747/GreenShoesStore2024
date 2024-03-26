@@ -16,6 +16,8 @@ public class Size {
 	@ManyToOne
 	@JoinColumn(name="product_Id")
 	private Product product;
+	
+	//var product ID
 	public Product getProduct() {
 		return product;
 	}

@@ -12,7 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.model.Product;
+import com.store.greenShoes.model.Size;
 import com.store.greenShoes.repository.ProductRepository;
+
+import jakarta.transaction.Transactional;
+
 @Service
 public class ProductService {
 	@Autowired
@@ -24,17 +28,14 @@ public class ProductService {
 		PageRequest pageable = PageRequest.of(page, size);
 		return productRepository.findAll(pageable).getContent();
 	}
-
-	public Product postProduct(Product product, List<MultipartFile> files )  {
-		String picture="";
-		for(MultipartFile file: files) {
-		try {
-			picture= this.uploadImageToFileSystem(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}}
-		product.setPicture(picture);
+@Transactional
+	public Product postProduct(Product product )  {
+		//product.setId(8942L);
+		for(Size s : product.getSizes())
+		{
+			product.addSize(s);
+		}
+		//product.getSizes().forEach(product.addSize(x=>x.size)); 
 		return productRepository.save(product);
 	}
 	
@@ -47,8 +48,6 @@ public class ProductService {
 		newProduct.setName(product.getName());
 		newProduct.setPicture(product.getPicture());
 		newProduct.setPrice(product.getPrice());
-		newProduct.setRating(product.getRating());
-		newProduct.setVendorName(product.getVendorName());
 		newProduct.setCategory(product.getCategory());
 		newProduct.setDescription(product.getDescription());
 		newProduct.setQuantity(product.getQuantity());
@@ -84,7 +83,6 @@ public class ProductService {
 
         file.transferTo(new File(filePath));
         return filePath;
-
     }
 
     public byte[] downloadImageFromFileSystem(String fileName) throws IOException {

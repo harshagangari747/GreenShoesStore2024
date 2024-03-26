@@ -29,7 +29,7 @@ public class ProductController {
 	
 	@PostMapping("/product")
 	private Product postProduct(@RequestParam(name="picture") List<MultipartFile> picture,@RequestBody Product product ) {
-		return productService.postProduct(product, picture);
+		return productService.postProduct(product);
 	}
 	
 	@PostMapping("/products")
