@@ -11,9 +11,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.store.greenShoes.DTO.ProductDTO;
+import com.store.greenShoes.model.Color;
+import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.model.Size;
+import com.store.greenShoes.repository.ColorRepository;
+import com.store.greenShoes.repository.ImageRepository;
 import com.store.greenShoes.repository.ProductRepository;
+import com.store.greenShoes.repository.SizeRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -21,6 +27,12 @@ import jakarta.transaction.Transactional;
 public class ProductService {
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	SizeRepository sizeRepository;
+	@Autowired
+	ColorRepository colorRepository;
+	@Autowired
+	ImageRepository imageRepository;
 	String projectDirectory = System.getProperty("user.dir");
 	private final String FOLDER_PATH=projectDirectory+"/Images/";
 	//CRUD
@@ -29,14 +41,38 @@ public class ProductService {
 		return productRepository.findAll(pageable).getContent();
 	}
 @Transactional
-	public Product postProduct(Product product )  {
+	public Product postProduct(ProductDTO productDTO)  {
 		//product.setId(8942L);
-		for(Size s : product.getSizes())
+//		for(Size s : product.getSizes())
+//		{
+//			product.addSize(s);
+//		}
+		//product.getSizes().forEach(product.addSize(x=>x.size));
+		Product product = productDTO.getProduct();
+		List<Size> sizes=productDTO.getSizes();
+		List<Color> colors=productDTO.getColors();
+		List<Image> images=productDTO.getImages();		
+	
+		Product insertedProduct=productRepository.save(product);
+		//Long productId=insertedProduct.getId();
+		for(Size s : sizes)
+			{
+				s.setProductId(insertedProduct);
+				sizeRepository.save(s);
+			}
+		for(Color c : colors)
 		{
-			product.addSize(s);
+			c.setProductId(insertedProduct);
+			colorRepository.save(c);
 		}
-		//product.getSizes().forEach(product.addSize(x=>x.size)); 
-		return productRepository.save(product);
+		for(Image i : images)
+		{
+			i.setProductId(insertedProduct);
+			imageRepository.save(i);
+		}
+		
+		return insertedProduct;
+		
 	}
 	
 	public List<Product> postManyProducts(List<Product> products){
@@ -58,8 +94,13 @@ public class ProductService {
 		productRepository.deleteById(id);
 	}
 	
-	public Product getProductById(Long id) {
-		return productRepository.getReferenceById(id);
+	public ProductDTO getProductById(Long id) {
+		List<Size> sizes= sizeRepository.getByProductId(id);
+		Product product=productRepository.getReferenceById(id);
+		ProductDTO DTO=new ProductDTO();
+		DTO.setSizes(sizes);
+		DTO.setProduct(product);
+		return DTO;
 	}
 
 	public List<Product> getProductsByCategory(Integer page, Integer size, String category) {

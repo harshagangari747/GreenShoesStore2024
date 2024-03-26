@@ -3,6 +3,9 @@ package com.store.greenShoes.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "product")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
 	
 	@Id
@@ -37,18 +41,18 @@ public class Product {
 	private String description;
 	
 	private Long quantity;
-	@OneToMany(mappedBy = "product",cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Size> sizes= new ArrayList<>();;
-	
-	public void addSize(Size size) {
-		size.setProduct(this);
-        this.sizes.add(size);
-    }
-	
-	public void removeSize(Size size) {
-        sizes.remove(size);
-        size.setProduct(null);
-    }
+//	@OneToMany(mappedBy = "productId",cascade = CascadeType.ALL, orphanRemoval = true)
+//	private List<Size> sizes= new ArrayList<>();
+//	
+//	public void addSize(Size size) {
+//		size.setProductId(this);
+//        this.sizes.add(size);
+//    }
+//	
+//	public void removeSize(Size size) {
+//        sizes.remove(size);
+//        size.setProductId(null);
+//    }
 
 	public Long getQuantity() {
 		return quantity;
@@ -113,13 +117,13 @@ public class Product {
 		this.description = description;
 	}
 
-	public List<Size> getSizes() {
-		return sizes;
-	}
-
-	public void setSizes(List<Size> sizes) {
-		this.sizes = sizes;
-	}
+//	public List<Size> getSizes() {
+//		return sizes;
+//	}
+//
+//	public void setSizes(List<Size> sizes) {
+//		this.sizes = sizes;
+//	}
 
 		
 	

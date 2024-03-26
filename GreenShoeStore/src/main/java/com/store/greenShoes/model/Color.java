@@ -9,40 +9,32 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Size {
+public class Color {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long ID;
-	private int size;
-	private int quantity;
-	
+	private String Color;
 	@ManyToOne
 	@JoinColumn(name="product_Id")
 	@Schema(description = "Product ID", type = "long", format = "long")
 	private Product productId;
-	
-	
-	public Product getProductId() {
-		return productId;
-	}
-	public void setProductId(Product productId) {
-		this.productId = productId;
-	}
 	public Long getID() {
 		return ID;
 	}
 	public void setID(Long iD) {
 		ID = iD;
 	}
-	public int getSize() {
-		return size;
+	public String getColor() {
+		return Color;
 	}
-	public void setSize(int size) {
-		this.size = size;
+	public void setColor(String color) {
+		Color = color;
 	}
-	public int getQuantity() {
-		return quantity;
+	public Product getProductId() {
+		return productId;
 	}
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
+	public void setProductId(Product productId) {
+		this.productId = productId;
 	}
+	
+	
 }

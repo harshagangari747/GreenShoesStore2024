@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.service.ProductService;
 
@@ -28,7 +28,7 @@ public class ProductController {
 	}
 	
 	@PostMapping("/product")
-	private Product postProduct(@RequestParam(name="picture") List<MultipartFile> picture,@RequestBody Product product ) {
+	private Product postProduct(@RequestBody ProductDTO product ) {
 		return productService.postProduct(product);
 	}
 	
@@ -48,7 +48,7 @@ public class ProductController {
 	}
 	
 	@GetMapping("/product/{id}")
-	private Product getProductById(@PathVariable("id") Long id) {
+	private ProductDTO getProductById(@PathVariable("id") Long id) {
 		return productService.getProductById(id);
 	}
 	
