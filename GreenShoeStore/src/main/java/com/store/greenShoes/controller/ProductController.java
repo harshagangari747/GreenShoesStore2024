@@ -22,7 +22,7 @@ public class ProductController {
 	@Autowired
 	ProductService productService;
 	@GetMapping("/product")
-	private List<Product> getAllProducts(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
+	private List<ProductDTO> getAllProducts(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size){
 		return productService.getAllProducts(page, size);
 	}

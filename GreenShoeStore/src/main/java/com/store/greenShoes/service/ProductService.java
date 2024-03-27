@@ -3,6 +3,7 @@ package com.store.greenShoes.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,9 +37,23 @@ public class ProductService {
 	String projectDirectory = System.getProperty("user.dir");
 	private final String FOLDER_PATH=projectDirectory+"/Images/";
 	//CRUD
-	public List<Product> getAllProducts(Integer page, Integer size) {
+	public List<ProductDTO> getAllProducts(Integer page, Integer size) {
 		PageRequest pageable = PageRequest.of(page, size);
-		return productRepository.findAll(pageable).getContent();
+		List<ProductDTO> DTO=new ArrayList<>();
+		
+		List<Product> products=productRepository.findAll();
+		for(Product product:products) {
+			List<Size> sizes= sizeRepository.getByProductId(product.getId());
+			List<Color> colors = colorRepository.getByProductId(product.getId());
+			List<Image> images = imageRepository.getByProductId(product.getId());
+			ProductDTO prodDTO=new ProductDTO();
+			prodDTO.setProduct(product);
+			prodDTO.setSizes(sizes);
+			prodDTO.setColors(colors);
+			prodDTO.setImages(images);
+			DTO.add(prodDTO);
+		}
+		return DTO;
 	}
 @Transactional
 	public Product postProduct(ProductDTO productDTO)  {
@@ -52,7 +67,6 @@ public class ProductService {
 		List<Size> sizes=productDTO.getSizes();
 		List<Color> colors=productDTO.getColors();
 		List<Image> images=productDTO.getImages();		
-	
 		Product insertedProduct=productRepository.save(product);
 		//Long productId=insertedProduct.getId();
 		for(Size s : sizes)
@@ -96,9 +110,13 @@ public class ProductService {
 	
 	public ProductDTO getProductById(Long id) {
 		List<Size> sizes= sizeRepository.getByProductId(id);
+		List<Color> colors = colorRepository.getByProductId(id);
+		List<Image> images = imageRepository.getByProductId(id);
 		Product product=productRepository.getReferenceById(id);
 		ProductDTO DTO=new ProductDTO();
 		DTO.setSizes(sizes);
+		DTO.setColors(colors);
+		DTO.setImages(images);
 		DTO.setProduct(product);
 		return DTO;
 	}
