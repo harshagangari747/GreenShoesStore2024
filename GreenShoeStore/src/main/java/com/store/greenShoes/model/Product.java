@@ -30,7 +30,7 @@ public class Product {
 	
 	private String name;
 	
-	private String picture;
+	//private String picture;
 	
 	private Long price;
 	
@@ -82,13 +82,13 @@ public class Product {
 		this.name = name;
 	}
 
-	public String getPicture() {
-		return picture;
-	}
-
-	public void setPicture(String picture) {
-		this.picture = picture;
-	}
+//	public String getPicture() {
+//		return picture;
+//	}
+//
+//	public void setPicture(String picture) {
+//		this.picture = picture;
+//	}
 
 	public Long getPrice() {
 		return price;

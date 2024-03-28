@@ -13,6 +13,13 @@ public class Color {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long ID;
 	private String Color;
+	private Long Quantity;
+	public Long getQuantity() {
+		return Quantity;
+	}
+	public void setQuantity(Long quantity) {
+		Quantity = quantity;
+	}
 	@ManyToOne
 	@JoinColumn(name="product_Id")
 	@Schema(description = "Product ID", type = "long", format = "long")

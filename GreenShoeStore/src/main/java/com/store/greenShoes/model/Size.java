@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 public class Size {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long ID;
-	private int size;
+	private float size;
 	private int quantity;
 	
 	@ManyToOne
@@ -33,10 +33,11 @@ public class Size {
 	public void setID(Long iD) {
 		ID = iD;
 	}
-	public int getSize() {
+	
+	public float getSize() {
 		return size;
 	}
-	public void setSize(int size) {
+	public void setSize(float size) {
 		this.size = size;
 	}
 	public int getQuantity() {

@@ -9,6 +9,6 @@ import com.store.greenShoes.model.Color;
 
 
 public interface ColorRepository extends JpaRepository<Color,Long>{
-	@Query(value="select * from size s where s.product_id=?1",nativeQuery = true)
+	@Query(value="select * from color s where s.product_id=?1",nativeQuery = true)
 	List<Color> getByProductId(Long id);
 }

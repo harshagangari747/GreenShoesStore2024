@@ -8,6 +8,6 @@ import com.store.greenShoes.model.Image;
 
 
 public interface ImageRepository extends JpaRepository<Image, Long>{
-	@Query(value="select * from size s where s.product_id=?1",nativeQuery = true)
+	@Query(value="select * from image s where s.product_id=?1",nativeQuery = true)
 	List<Image> getByProductId(Long id);
 }

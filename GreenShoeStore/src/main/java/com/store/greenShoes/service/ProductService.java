@@ -93,15 +93,28 @@ public class ProductService {
 		return productRepository.saveAll(products);
 	}
 
-	public Product updateProduct(Long id, Product product) {
-		Product newProduct = productRepository.getReferenceById(id);
-		newProduct.setName(product.getName());
-		newProduct.setPicture(product.getPicture());
-		newProduct.setPrice(product.getPrice());
-		newProduct.setCategory(product.getCategory());
-		newProduct.setDescription(product.getDescription());
-		newProduct.setQuantity(product.getQuantity());
-		return productRepository.save(newProduct);
+	public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+		Product newProduct=productDTO.getProduct();
+		Product oldProduct = productRepository.getReferenceById(id);
+		oldProduct.setName(newProduct.getName());
+		oldProduct.setPrice(newProduct.getPrice());
+		oldProduct.setCategory(newProduct.getCategory());
+		oldProduct.setDescription(newProduct.getDescription());
+		oldProduct.setQuantity(newProduct.getQuantity());
+		productRepository.save(oldProduct);
+		List<Size> newSizes=productDTO.getSizes();
+		for(Size s:newSizes) {
+			Size oldSize=sizeRepository.getReferenceById(s.getID());
+			oldSize.setQuantity(s.getQuantity());
+			sizeRepository.save(oldSize);
+		}
+		List<Color> newColor=productDTO.getColors();
+		for(Color s:newColor) {
+			Color oldColor=colorRepository.getReferenceById(s.getID());
+			oldColor.setQuantity(s.getQuantity());
+			colorRepository.save(oldColor);
+		}
+		return productDTO;
 	}
 
 	public void deleteProduct(Long id) {
@@ -144,11 +157,11 @@ public class ProductService {
         return filePath;
     }
 
-    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
-        Optional<Product> fileData = productRepository.findByPicture(fileName);
-        String filePath=fileData.get().getPicture();
-        byte[] images = Files.readAllBytes(new File(filePath).toPath());
-        return images;
-    }
+//    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
+//        Optional<Product> fileData = productRepository.findByPicture(fileName);
+//        String filePath=fileData.get().getPicture();
+//        byte[] images = Files.readAllBytes(new File(filePath).toPath());
+//        return images;
+//    }
 
 }
