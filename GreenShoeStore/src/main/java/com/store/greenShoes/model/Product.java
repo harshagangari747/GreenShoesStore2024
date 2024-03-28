@@ -1,7 +1,12 @@
 package com.store.greenShoes.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,23 +16,24 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+
 @Entity
 @Table(name = "product")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+	//var productID=567;
+	
 	private String name;
 	
-	private String picture;
+	//private String picture;
 	
 	private Long price;
 	
-	private Double rating;
-	
-	private String vendorName;
 	@ManyToOne
 	@JoinColumn(name = "catagoryID")
 	private Category category;
@@ -35,8 +41,18 @@ public class Product {
 	private String description;
 	
 	private Long quantity;
-	@OneToMany(mappedBy = "product")
-	private List<Size> sizes;
+//	@OneToMany(mappedBy = "productId",cascade = CascadeType.ALL, orphanRemoval = true)
+//	private List<Size> sizes= new ArrayList<>();
+//	
+//	public void addSize(Size size) {
+//		size.setProductId(this);
+//        this.sizes.add(size);
+//    }
+//	
+//	public void removeSize(Size size) {
+//        sizes.remove(size);
+//        size.setProductId(null);
+//    }
 
 	public Long getQuantity() {
 		return quantity;
@@ -66,13 +82,13 @@ public class Product {
 		this.name = name;
 	}
 
-	public String getPicture() {
-		return picture;
-	}
-
-	public void setPicture(String picture) {
-		this.picture = picture;
-	}
+//	public String getPicture() {
+//		return picture;
+//	}
+//
+//	public void setPicture(String picture) {
+//		this.picture = picture;
+//	}
 
 	public Long getPrice() {
 		return price;
@@ -82,22 +98,7 @@ public class Product {
 		this.price = price;
 	}
 
-	public Double getRating() {
-		return rating;
-	}
-
-	public void setRating(Double rating) {
-		this.rating = rating;
-	}
-
-	public String getVendorName() {
-		return vendorName;
-	}
-
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
-	}
-
+	
 	
 
 	public Category getCategory() {
@@ -116,13 +117,15 @@ public class Product {
 		this.description = description;
 	}
 
-	@Override
-	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", picture=" + picture + ", price=" + price + ", rating="
-				+ rating + ", vendorName=" + vendorName + ", category=" + category + ", description=" + description
-				+ "]";
-	}
-	
+//	public List<Size> getSizes() {
+//		return sizes;
+//	}
+//
+//	public void setSizes(List<Size> sizes) {
+//		this.sizes = sizes;
+//	}
+
+		
 	
 	
 }

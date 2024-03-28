@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.service.ProductService;
 
@@ -22,14 +22,14 @@ public class ProductController {
 	@Autowired
 	ProductService productService;
 	@GetMapping("/product")
-	private List<Product> getAllProducts(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
+	private List<ProductDTO> getAllProducts(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size){
 		return productService.getAllProducts(page, size);
 	}
 	
 	@PostMapping("/product")
-	private Product postProduct(@RequestParam(name="picture") List<MultipartFile> picture,@RequestBody Product product ) {
-		return productService.postProduct(product, picture);
+	private Product postProduct(@RequestBody ProductDTO product ) {
+		return productService.postProduct(product);
 	}
 	
 	@PostMapping("/products")
@@ -38,7 +38,7 @@ public class ProductController {
 	}
 	
 	@PutMapping("/product/{id}")
-	private Product updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+	private ProductDTO updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO product) {
 		return productService.updateProduct(id, product);
 	}
 	
@@ -48,7 +48,7 @@ public class ProductController {
 	}
 	
 	@GetMapping("/product/{id}")
-	private Product getProductById(@PathVariable("id") Long id) {
+	private ProductDTO getProductById(@PathVariable("id") Long id) {
 		return productService.getProductById(id);
 	}
 	

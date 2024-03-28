@@ -3,6 +3,7 @@ package com.store.greenShoes.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,56 +12,126 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.store.greenShoes.DTO.ProductDTO;
+import com.store.greenShoes.model.Color;
+import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
+import com.store.greenShoes.model.Size;
+import com.store.greenShoes.repository.ColorRepository;
+import com.store.greenShoes.repository.ImageRepository;
 import com.store.greenShoes.repository.ProductRepository;
+import com.store.greenShoes.repository.SizeRepository;
+
+import jakarta.transaction.Transactional;
+
 @Service
 public class ProductService {
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	SizeRepository sizeRepository;
+	@Autowired
+	ColorRepository colorRepository;
+	@Autowired
+	ImageRepository imageRepository;
 	String projectDirectory = System.getProperty("user.dir");
 	private final String FOLDER_PATH=projectDirectory+"/Images/";
 	//CRUD
-	public List<Product> getAllProducts(Integer page, Integer size) {
+	public List<ProductDTO> getAllProducts(Integer page, Integer size) {
 		PageRequest pageable = PageRequest.of(page, size);
-		return productRepository.findAll(pageable).getContent();
+		List<ProductDTO> DTO=new ArrayList<>();
+		
+		List<Product> products=productRepository.findAll();
+		for(Product product:products) {
+			List<Size> sizes= sizeRepository.getByProductId(product.getId());
+			List<Color> colors = colorRepository.getByProductId(product.getId());
+			List<Image> images = imageRepository.getByProductId(product.getId());
+			ProductDTO prodDTO=new ProductDTO();
+			prodDTO.setProduct(product);
+			prodDTO.setSizes(sizes);
+			prodDTO.setColors(colors);
+			prodDTO.setImages(images);
+			DTO.add(prodDTO);
+		}
+		return DTO;
 	}
-
-	public Product postProduct(Product product, List<MultipartFile> files )  {
-		String picture="";
-		for(MultipartFile file: files) {
-		try {
-			picture= this.uploadImageToFileSystem(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}}
-		product.setPicture(picture);
-		return productRepository.save(product);
+@Transactional
+	public Product postProduct(ProductDTO productDTO)  {
+		//product.setId(8942L);
+//		for(Size s : product.getSizes())
+//		{
+//			product.addSize(s);
+//		}
+		//product.getSizes().forEach(product.addSize(x=>x.size));
+		Product product = productDTO.getProduct();
+		List<Size> sizes=productDTO.getSizes();
+		List<Color> colors=productDTO.getColors();
+		List<Image> images=productDTO.getImages();		
+		Product insertedProduct=productRepository.save(product);
+		//Long productId=insertedProduct.getId();
+		for(Size s : sizes)
+			{
+				s.setProductId(insertedProduct);
+				sizeRepository.save(s);
+			}
+		for(Color c : colors)
+		{
+			c.setProductId(insertedProduct);
+			colorRepository.save(c);
+		}
+		for(Image i : images)
+		{
+			i.setProductId(insertedProduct);
+			imageRepository.save(i);
+		}
+		
+		return insertedProduct;
+		
 	}
 	
 	public List<Product> postManyProducts(List<Product> products){
 		return productRepository.saveAll(products);
 	}
 
-	public Product updateProduct(Long id, Product product) {
-		Product newProduct = productRepository.getReferenceById(id);
-		newProduct.setName(product.getName());
-		newProduct.setPicture(product.getPicture());
-		newProduct.setPrice(product.getPrice());
-		newProduct.setRating(product.getRating());
-		newProduct.setVendorName(product.getVendorName());
-		newProduct.setCategory(product.getCategory());
-		newProduct.setDescription(product.getDescription());
-		newProduct.setQuantity(product.getQuantity());
-		return productRepository.save(newProduct);
+	public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+		Product newProduct=productDTO.getProduct();
+		Product oldProduct = productRepository.getReferenceById(id);
+		oldProduct.setName(newProduct.getName());
+		oldProduct.setPrice(newProduct.getPrice());
+		oldProduct.setCategory(newProduct.getCategory());
+		oldProduct.setDescription(newProduct.getDescription());
+		oldProduct.setQuantity(newProduct.getQuantity());
+		productRepository.save(oldProduct);
+		List<Size> newSizes=productDTO.getSizes();
+		for(Size s:newSizes) {
+			Size oldSize=sizeRepository.getReferenceById(s.getID());
+			oldSize.setQuantity(s.getQuantity());
+			sizeRepository.save(oldSize);
+		}
+		List<Color> newColor=productDTO.getColors();
+		for(Color s:newColor) {
+			Color oldColor=colorRepository.getReferenceById(s.getID());
+			oldColor.setQuantity(s.getQuantity());
+			colorRepository.save(oldColor);
+		}
+		return productDTO;
 	}
 
 	public void deleteProduct(Long id) {
 		productRepository.deleteById(id);
 	}
 	
-	public Product getProductById(Long id) {
-		return productRepository.getReferenceById(id);
+	public ProductDTO getProductById(Long id) {
+		List<Size> sizes= sizeRepository.getByProductId(id);
+		List<Color> colors = colorRepository.getByProductId(id);
+		List<Image> images = imageRepository.getByProductId(id);
+		Product product=productRepository.getReferenceById(id);
+		ProductDTO DTO=new ProductDTO();
+		DTO.setSizes(sizes);
+		DTO.setColors(colors);
+		DTO.setImages(images);
+		DTO.setProduct(product);
+		return DTO;
 	}
 
 	public List<Product> getProductsByCategory(Integer page, Integer size, String category) {
@@ -84,14 +155,13 @@ public class ProductService {
 
         file.transferTo(new File(filePath));
         return filePath;
-
     }
 
-    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
-        Optional<Product> fileData = productRepository.findByPicture(fileName);
-        String filePath=fileData.get().getPicture();
-        byte[] images = Files.readAllBytes(new File(filePath).toPath());
-        return images;
-    }
+//    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
+//        Optional<Product> fileData = productRepository.findByPicture(fileName);
+//        String filePath=fileData.get().getPicture();
+//        byte[] images = Files.readAllBytes(new File(filePath).toPath());
+//        return images;
+//    }
 
 }
