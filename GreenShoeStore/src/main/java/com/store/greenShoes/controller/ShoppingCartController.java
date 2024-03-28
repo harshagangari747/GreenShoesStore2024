@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.model.CartItem;
+import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.Customer;
 import com.store.greenShoes.model.Product;
+import com.store.greenShoes.model.Size;
 import com.store.greenShoes.repository.CartItemRepository;
+import com.store.greenShoes.repository.ColorRepository;
 import com.store.greenShoes.repository.CustomerRepository;
 import com.store.greenShoes.repository.ProductRepository;
+import com.store.greenShoes.repository.SizeRepository;
 import com.store.greenShoes.service.ShoppingCartServices;
 
 import jakarta.transaction.Transactional;
@@ -36,6 +40,12 @@ public class ShoppingCartController {
 	
 	@Autowired
 	private CartItemRepository cartItemRepository;
+	
+	@Autowired
+	private SizeRepository sizeRepository;
+	
+	@Autowired
+	private ColorRepository colorRepository;
 
 	
 	@GetMapping("/cart/{uid}")
@@ -47,14 +57,26 @@ public class ShoppingCartController {
 	
 	@PostMapping("/cart/{uid}/{pid}")
 	public CartItem addProduct(@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId,@PathVariable("pid") Long productId) {
+//		Product product=productRepository.getReferenceById(productId);
+//		Customer customer=userRepository.getReferenceById(customerId);
+//		cartItem.setQuantity(1L);
+//		cartItem.setSubTotal(product.getPrice()*cartItem.getQuantity());
+//		System.out.println(product.getPrice());
+//		System.out.println(product.getQuantity());
+//		cartItem.setUser(customer);
+//		cartItem.setProduct(product);
 		Product product=productRepository.getReferenceById(productId);
 		Customer customer=userRepository.getReferenceById(customerId);
-		cartItem.setQuantity(1L);
+		Size size = sizeRepository.getReferenceById(cartItem.getSize().getID());
+		Color color = colorRepository.getReferenceById(cartItem.getColor().getID());
+		//cartItem.setQuantity(1L);
 		cartItem.setSubTotal(product.getPrice()*cartItem.getQuantity());
 		System.out.println(product.getPrice());
 		System.out.println(product.getQuantity());
 		cartItem.setUser(customer);
 		cartItem.setProduct(product);
+		cartItem.setSize(size);
+		cartItem.setColor(color);
 		return shoppingCartServices.addProduct(cartItem);
 	}
 	/*
@@ -86,10 +108,10 @@ public class ShoppingCartController {
 		shoppingCartServices.removeProduct(cartId);
 	}
 	
-	@PostMapping("/product/post")
-	public Product postProduct(@RequestBody Product product) {
-		return productRepository.save(product);
-	}
+//	@PostMapping("/product/post")
+//	public Product postProduct(@RequestBody Product product) {
+//		return productRepository.save(product);
+//	}
 	
 	@GetMapping("/cart/get")
 	public List<CartItem> getAllCartItems(){
