@@ -111,7 +111,7 @@ public class ProductService {
 		List<Color> newColor=productDTO.getColors();
 		for(Color s:newColor) {
 			Color oldColor=colorRepository.getReferenceById(s.getID());
-			oldColor.setQuantity(s.getQuantity());
+			//oldColor.setQuantity(s.getQuantity());
 			colorRepository.save(oldColor);
 		}
 		return productDTO;
