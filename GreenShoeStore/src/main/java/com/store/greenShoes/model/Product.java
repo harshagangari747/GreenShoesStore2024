@@ -32,7 +32,7 @@ public class Product {
 	
 	//private String picture;
 	
-	private Long price;
+	private float price;
 	
 	@ManyToOne
 	@JoinColumn(name = "catagoryID")
@@ -90,19 +90,21 @@ public class Product {
 //		this.picture = picture;
 //	}
 
-	public Long getPrice() {
-		return price;
-	}
-
-	public void setPrice(Long price) {
-		this.price = price;
-	}
+	
 
 	
 	
 
 	public Category getCategory() {
 		return category;
+	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
 	}
 
 	public void setCategory(Category category) {

@@ -119,12 +119,12 @@ public class ShoppingCartController {
 	}
 	
 	@GetMapping("/cart/sum/{uid}")
-	public Long getCartSum(@PathVariable("uid") Long userId) {
+	public float getCartSum(@PathVariable("uid") Long userId) {
 		Customer customer=userRepository.getReferenceById(userId);
 		List<CartItem> cartItems=shoppingCartServices.listCartItems(customer);
-		Long sum = 0l;
+		float sum = 0;
 		for(CartItem c:cartItems) {
-			Long sumLong=shoppingCartServices.cartSum(c,userId);
+			float sumLong=shoppingCartServices.cartSum(c,userId);
 			sum = sum+sumLong;
 		}
 
