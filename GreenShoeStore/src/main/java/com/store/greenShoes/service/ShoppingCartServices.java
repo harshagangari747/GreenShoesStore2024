@@ -42,13 +42,6 @@ public class ShoppingCartServices {
 		
 	}
 
-	public float updateQuantity(Long productId, Long quantity, Long customerId) {
-		cartItemRepository.updateQuantity(quantity,productId,customerId);
-		Product product=productRepository.getReferenceById(productId);
-		float subTotal=product.getPrice()*quantity;
-		return subTotal;
-	}
-
 	public void removeProduct(Long cartId) {
 		cartItemRepository.deleteById(cartId);
 	}
