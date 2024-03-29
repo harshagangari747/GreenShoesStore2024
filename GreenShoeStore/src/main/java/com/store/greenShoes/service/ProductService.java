@@ -100,7 +100,7 @@ public class ProductService {
 		oldProduct.setPrice(newProduct.getPrice());
 		oldProduct.setCategory(newProduct.getCategory());
 		oldProduct.setDescription(newProduct.getDescription());
-		oldProduct.setQuantity(newProduct.getQuantity());
+		
 		productRepository.save(oldProduct);
 		List<Size> newSizes=productDTO.getSizes();
 		for(Size s:newSizes) {
@@ -143,9 +143,9 @@ public class ProductService {
 		return  productRepository.searchProduct(keyword);
 	}
 	
-	public Long getProductQuantity(Long id) {
-		return productRepository.getReferenceById(id).getQuantity();
-	}
+//	public Long getProductQuantity(Long id) {
+//		return productRepository.getReferenceById(id).getQuantity();
+//	}
 	public void print() {
 		System.out.println(FOLDER_PATH);
 	}
