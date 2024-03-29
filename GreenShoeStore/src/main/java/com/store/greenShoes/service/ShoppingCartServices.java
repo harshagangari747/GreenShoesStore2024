@@ -42,13 +42,6 @@ public class ShoppingCartServices {
 		
 	}
 
-	public long updateQuantity(Long productId, Long quantity, Long customerId) {
-		cartItemRepository.updateQuantity(quantity,productId,customerId);
-		Product product=productRepository.getReferenceById(productId);
-		long subTotal=product.getPrice()*quantity;
-		return subTotal;
-	}
-
 	public void removeProduct(Long cartId) {
 		cartItemRepository.deleteById(cartId);
 	}
@@ -58,9 +51,9 @@ public class ShoppingCartServices {
 		
 		return cartItemRepository.save(cartItem);
 	}
-	public Long cartSum(CartItem c, Long userId) {
+	public float cartSum(CartItem c, Long userId) {
 		// TODO Auto-generated method stub
-		Long subTotal=c.getSubTotal();
+		float subTotal=c.getSubTotal();
 		return subTotal;
 	}
 	

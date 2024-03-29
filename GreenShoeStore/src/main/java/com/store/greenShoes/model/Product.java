@@ -32,7 +32,7 @@ public class Product {
 	
 	//private String picture;
 	
-	private Long price;
+	private float price;
 	
 	@ManyToOne
 	@JoinColumn(name = "catagoryID")
@@ -40,7 +40,6 @@ public class Product {
 	
 	private String description;
 	
-	private Long quantity;
 //	@OneToMany(mappedBy = "productId",cascade = CascadeType.ALL, orphanRemoval = true)
 //	private List<Size> sizes= new ArrayList<>();
 //	
@@ -54,13 +53,6 @@ public class Product {
 //        size.setProductId(null);
 //    }
 
-	public Long getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
 
 	public Product() {
 		super();
@@ -82,27 +74,16 @@ public class Product {
 		this.name = name;
 	}
 
-//	public String getPicture() {
-//		return picture;
-//	}
-//
-//	public void setPicture(String picture) {
-//		this.picture = picture;
-//	}
+	public Category getCategory() {
+		return category;
+	}
 
-	public Long getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(Long price) {
+	public void setPrice(float price) {
 		this.price = price;
-	}
-
-	
-	
-
-	public Category getCategory() {
-		return category;
 	}
 
 	public void setCategory(Category category) {
@@ -117,13 +98,6 @@ public class Product {
 		this.description = description;
 	}
 
-//	public List<Size> getSizes() {
-//		return sizes;
-//	}
-//
-//	public void setSizes(List<Size> sizes) {
-//		this.sizes = sizes;
-//	}
 
 		
 	

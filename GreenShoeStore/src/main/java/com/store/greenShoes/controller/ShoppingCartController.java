@@ -57,14 +57,6 @@ public class ShoppingCartController {
 	
 	@PostMapping("/cart/{uid}/{pid}")
 	public CartItem addProduct(@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId,@PathVariable("pid") Long productId) {
-//		Product product=productRepository.getReferenceById(productId);
-//		Customer customer=userRepository.getReferenceById(customerId);
-//		cartItem.setQuantity(1L);
-//		cartItem.setSubTotal(product.getPrice()*cartItem.getQuantity());
-//		System.out.println(product.getPrice());
-//		System.out.println(product.getQuantity());
-//		cartItem.setUser(customer);
-//		cartItem.setProduct(product);
 		Product product=productRepository.getReferenceById(productId);
 		Customer customer=userRepository.getReferenceById(customerId);
 		Size size = sizeRepository.getReferenceById(cartItem.getSize().getID());
@@ -72,35 +64,20 @@ public class ShoppingCartController {
 		//cartItem.setQuantity(1L);
 		cartItem.setSubTotal(product.getPrice()*cartItem.getQuantity());
 		System.out.println(product.getPrice());
-		System.out.println(product.getQuantity());
 		cartItem.setUser(customer);
 		cartItem.setProduct(product);
 		cartItem.setSize(size);
 		cartItem.setColor(color);
 		return shoppingCartServices.addProduct(cartItem);
 	}
-	/*
-	@PostMapping("/cart/post/{uid}/{pid}/{qty}")//edit this api as per S
-	public Long addquantity(@PathVariable("pid") Long productId,
-			@PathVariable("qty") Long quantity,@PathVariable("uid") Long customerId) {
-		Customer customer=customerRepository.getById(customerId);
-		Long addedQuantity=shoppingCartServices.addQuantity(productId, quantity, customer);
-		return addedQuantity;
-	}*/
+	
 	@PutMapping("/cart/put/{uid}/{pid}")//Post
 	public CartItem addquantity(@PathVariable("pid") Long productId,
 			@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId) {
 		Customer customer=userRepository.getReferenceById(customerId);
 		return shoppingCartServices.putQuantity(productId, cartItem.getQuantity(), customer);
 	}
-	/*
-	@PutMapping("/cart/update/{uid}/{pid}/{qty}")//put
-	public Long updateQuantity(@PathVariable("pid") Long productId, 
-			@PathVariable("qty") Long quantity,@PathVariable("uid") Long customerId) {
 	
-		Long subTotal=shoppingCartServices.updateQuantity(productId,quantity,customerId);
-		return subTotal;
-	}*/
 	
 	@Transactional
 	@DeleteMapping("/cart/remove/{cid}")
@@ -108,10 +85,7 @@ public class ShoppingCartController {
 		shoppingCartServices.removeProduct(cartId);
 	}
 	
-//	@PostMapping("/product/post")
-//	public Product postProduct(@RequestBody Product product) {
-//		return productRepository.save(product);
-//	}
+
 	
 	@GetMapping("/cart/get")
 	public List<CartItem> getAllCartItems(){
@@ -119,12 +93,12 @@ public class ShoppingCartController {
 	}
 	
 	@GetMapping("/cart/sum/{uid}")
-	public Long getCartSum(@PathVariable("uid") Long userId) {
+	public float getCartSum(@PathVariable("uid") Long userId) {
 		Customer customer=userRepository.getReferenceById(userId);
 		List<CartItem> cartItems=shoppingCartServices.listCartItems(customer);
-		Long sum = 0l;
+		float sum = 0;
 		for(CartItem c:cartItems) {
-			Long sumLong=shoppingCartServices.cartSum(c,userId);
+			float sumLong=shoppingCartServices.cartSum(c,userId);
 			sum = sum+sumLong;
 		}
 

@@ -54,13 +54,11 @@ public class CartItem {
 
 	private Long quantity;
 	
-	private Long subTotal;
+	private float subTotal;
 
 	
 
-	public void setSubTotal(Long subTotal) {
-		this.subTotal = subTotal;
-	}
+	
 
 	public Long getId() {
 		return id;
@@ -88,11 +86,17 @@ public class CartItem {
 		this.quantity = quantity;
 	}
 
-	public Long getSubTotal() {
+	
+
+	
+
+	public float getSubTotal() {
 		return subTotal;
 	}
 
-	
+	public void setSubTotal(float subTotal) {
+		this.subTotal = subTotal;
+	}
 
 	public Customer getUser() {
 		return user;
