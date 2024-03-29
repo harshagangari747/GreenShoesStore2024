@@ -63,10 +63,6 @@ public class ProductController {
 		return productService.searchProduct(keyword);
 	}
 	
-	@GetMapping("/product/quantity/{id}")
-	private Long getProductQuantity(@PathVariable("id") Long id) {
-		return productService.getProductQuantity(id);
-	}
 	@GetMapping("/print")
 	private void print() {
 		productService.print();
