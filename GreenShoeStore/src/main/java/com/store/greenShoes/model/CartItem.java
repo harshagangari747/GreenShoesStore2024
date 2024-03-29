@@ -28,6 +28,30 @@ public class CartItem {
 	@JoinColumn(name="customer_id")
 	private Customer user;
 	
+	@ManyToOne
+	@JoinColumn(name="size_id")
+	private Size size;
+	
+	@ManyToOne
+	@JoinColumn(name="color_id")
+	private Color color;
+	
+	public Size getSize() {
+		return size;
+	}
+
+	public void setSize(Size size) {
+		this.size = size;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
 	private Long quantity;
 	
 	private Long subTotal;
