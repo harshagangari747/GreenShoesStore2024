@@ -13,20 +13,20 @@ public class Size {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long ID;
 	private float size;
-	private int quantity;
+//	private int quantity;
 	
-	@ManyToOne
-	@JoinColumn(name="product_Id")
-	@Schema(description = "Product ID", type = "long", format = "long")
-	private Product productId;
+//	@ManyToOne
+//	@JoinColumn(name="product_Id")
+//	@Schema(description = "Product ID", type = "long", format = "long")
+//	private Product productId;
 	
 	
-	public Product getProductId() {
-		return productId;
-	}
-	public void setProductId(Product productId) {
-		this.productId = productId;
-	}
+//	public Product getProductId() {
+//		return productId;
+//	}
+//	public void setProductId(Product productId) {
+//		this.productId = productId;
+//	}
 	public Long getID() {
 		return ID;
 	}
@@ -40,10 +40,10 @@ public class Size {
 	public void setSize(float size) {
 		this.size = size;
 	}
-	public int getQuantity() {
-		return quantity;
-	}
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+//	public int getQuantity() {
+//		return quantity;
+//	}
+//	public void setQuantity(int quantity) {
+//		this.quantity = quantity;
+//	}
 }

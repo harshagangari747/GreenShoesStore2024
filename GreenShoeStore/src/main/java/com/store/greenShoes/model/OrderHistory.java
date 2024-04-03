@@ -13,14 +13,15 @@ public class OrderHistory {
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name="customerId")
-	private Customer customer;
+	private Users customer;
 	@ManyToOne
 	@JoinColumn(name="oderId")
 	private Orders order;
-	public Customer getCustomer() {
+	
+	public Users getCustomer() {
 		return customer;
 	}
-	public void setCustomer(Customer customer) {
+	public void setCustomer(Users customer) {
 		this.customer = customer;
 	}
 	public Orders getOrder() {

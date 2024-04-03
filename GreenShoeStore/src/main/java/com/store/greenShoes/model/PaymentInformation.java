@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 @Entity
 public class PaymentInformation {
@@ -19,6 +20,16 @@ public class PaymentInformation {
 	@Column(length=16)
 	private Long ccNumber;
 	private Date expirationDate;
+	private int cvv;
+	@ManyToOne
+	@JoinColumn(name ="billing_id")
+	private BillingAddress billingAddress;
+	public int getCvv() {
+		return cvv;
+	}
+	public void setCvv(int cvv) {
+		this.cvv = cvv;
+	}
 	public Long getPaymentId() {
 		return paymentId;
 	}

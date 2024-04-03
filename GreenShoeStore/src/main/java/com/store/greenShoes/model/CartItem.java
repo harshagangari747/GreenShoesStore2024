@@ -20,45 +20,39 @@ public class CartItem {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name="product_id")
-	private Product product;
+//	@ManyToOne
+//	@JoinColumn(name="product_id")
+//	private Product product;
 	
 	@ManyToOne
 	@JoinColumn(name="customer_id")
-	private Customer user;
+	private Users user;
 	
-	@ManyToOne
-	@JoinColumn(name="size_id")
-	private Size size;
+//	@ManyToOne
+//	@JoinColumn(name="size_id")
+//	private Size size;
+//	
+//	@ManyToOne
+//	@JoinColumn(name="color_id")
+//	private Color color;
 	
-	@ManyToOne
-	@JoinColumn(name="color_id")
-	private Color color;
-	
-	public Size getSize() {
-		return size;
-	}
-
-	public void setSize(Size size) {
-		this.size = size;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
 
 	private Long quantity;
 	
 	private float subTotal;
+	@ManyToOne
+	@JoinColumn(name="productSizeColor_id")
+	private ProductSizeColor productSizeColor;
 
 	
 
-	
+	public ProductSizeColor getProductSizeColor() {
+		return productSizeColor;
+	}
+
+	public void setProductSizeColor(ProductSizeColor productSizeColor) {
+		this.productSizeColor = productSizeColor;
+	}
 
 	public Long getId() {
 		return id;
@@ -68,13 +62,6 @@ public class CartItem {
 		this.id = id;
 	}
 
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
 
 	
 
@@ -98,19 +85,20 @@ public class CartItem {
 		this.subTotal = subTotal;
 	}
 
-	public Customer getUser() {
+	public Users getUser() {
 		return user;
 	}
 
-	public void setUser(Customer user) {
+	public void setUser(Users user) {
 		this.user = user;
 	}
 
-	@Override
-	public String toString() {
-		return "CartItem [id=" + id + ", product=" + product + ", user=" + user + ", quantity=" + quantity
-				+ ", subTotal=" + subTotal + "]";
-	}
+	
+
+	
+
+	
+
 
 	
 	
