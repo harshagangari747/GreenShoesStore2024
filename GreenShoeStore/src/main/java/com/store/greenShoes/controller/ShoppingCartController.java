@@ -1,5 +1,6 @@
 package com.store.greenShoes.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +12,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.greenShoes.DTO.CartItemDTO;
 import com.store.greenShoes.model.CartItem;
 import com.store.greenShoes.model.Color;
-import com.store.greenShoes.model.Customer;
 import com.store.greenShoes.model.Product;
+import com.store.greenShoes.model.ProductSizeColor;
 import com.store.greenShoes.model.Size;
+import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.CartItemRepository;
 import com.store.greenShoes.repository.ColorRepository;
-import com.store.greenShoes.repository.CustomerRepository;
 import com.store.greenShoes.repository.ProductRepository;
+import com.store.greenShoes.repository.ProductSizeColorRepository;
 import com.store.greenShoes.repository.SizeRepository;
+import com.store.greenShoes.repository.UsersRepository;
 import com.store.greenShoes.service.ShoppingCartServices;
 
 import jakarta.transaction.Transactional;
@@ -33,78 +37,92 @@ public class ShoppingCartController {
 	private ShoppingCartServices shoppingCartServices;
 	
 	@Autowired
-	private CustomerRepository userRepository;
-	
+	private UsersRepository userRepository;
 	@Autowired
 	private ProductRepository productRepository;
 	
 	@Autowired
 	private CartItemRepository cartItemRepository;
-	
 	@Autowired
 	private SizeRepository sizeRepository;
-	
-	@Autowired
+	@Autowired 
 	private ColorRepository colorRepository;
+	@Autowired
+	private ProductSizeColorRepository productSizeColorRepository;
 
 	
 	@GetMapping("/cart/{uid}")
-	public List<CartItem> showShoppingCart(@PathVariable("uid") Long customerId) {
-		Customer customer=userRepository.getReferenceById(customerId);
+	public List<CartItemDTO> showShoppingCart(@PathVariable("uid") Long customerId) {
+		Users customer=userRepository.getReferenceById(customerId);
 		List<CartItem> cartItems=shoppingCartServices.listCartItems(customer);
-		return cartItems;
-	}
-	
-	@PostMapping("/cart/{uid}/{pid}")
-	public CartItem addProduct(@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId,@PathVariable("pid") Long productId) {
-		Product product=productRepository.getReferenceById(productId);
-		Customer customer=userRepository.getReferenceById(customerId);
-		Size size = sizeRepository.getReferenceById(cartItem.getSize().getID());
-		Color color = colorRepository.getReferenceById(cartItem.getColor().getID());
-		//cartItem.setQuantity(1L);
-		cartItem.setSubTotal(product.getPrice()*cartItem.getQuantity());
-		System.out.println(product.getPrice());
-		cartItem.setUser(customer);
-		cartItem.setProduct(product);
-		cartItem.setSize(size);
-		cartItem.setColor(color);
-		return shoppingCartServices.addProduct(cartItem);
-	}
-	
-	@PutMapping("/cart/put/{uid}/{pid}")//Post
-	public CartItem addquantity(@PathVariable("pid") Long productId,
-			@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId) {
-		Customer customer=userRepository.getReferenceById(customerId);
-		return shoppingCartServices.putQuantity(productId, cartItem.getQuantity(), customer);
-	}
-	
-	
-	@Transactional
-	@DeleteMapping("/cart/remove/{cid}")
-	public void removeProductFromCart(@PathVariable("cid") Long cartId) {		
-		shoppingCartServices.removeProduct(cartId);
-	}
-	
-
-	
-	@GetMapping("/cart/get")
-	public List<CartItem> getAllCartItems(){
-		return cartItemRepository.findAll();
-	}
-	
-	@GetMapping("/cart/sum/{uid}")
-	public float getCartSum(@PathVariable("uid") Long userId) {
-		Customer customer=userRepository.getReferenceById(userId);
-		List<CartItem> cartItems=shoppingCartServices.listCartItems(customer);
-		float sum = 0;
+		List<CartItemDTO> cartItemDTO= new ArrayList<>();
+		
 		for(CartItem c:cartItems) {
-			float sumLong=shoppingCartServices.cartSum(c,userId);
-			sum = sum+sumLong;
+			CartItemDTO ctd=new CartItemDTO();
+			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
+			ctd.setProductId(c.getProductSizeColor().getProductId().getId());
+			ctd.setQuantity(c.getQuantity());
+			ctd.setSizeId(c.getProductSizeColor().getSizeId().getID());
+			ctd.setUserId(c.getUser().getUserId());
+			cartItemDTO.add(ctd);
 		}
-
-		return sum;
+		return cartItemDTO;
 	}
 	
+	@PostMapping("/cart")
+	public CartItem addProduct(@RequestBody CartItemDTO cartItemDTO) {
+		Product product=productRepository.getReferenceById(cartItemDTO.getProductId());
+		Users customer=userRepository.getReferenceById(cartItemDTO.getUserId());
+		Size size=sizeRepository.getReferenceById(cartItemDTO.getSizeId());
+		Color color=colorRepository.getReferenceById(cartItemDTO.getColorId());
+		ProductSizeColor psc=new ProductSizeColor();
+		psc.setColorId(color);
+		psc.setProductId(product);
+		psc.setSizeId(size);
+		ProductSizeColor psc1= productSizeColorRepository.findByProductSizeColor(product, size,color);
+		CartItem cartItem= new CartItem();
+		cartItem.setProductSizeColor(psc1);
+		cartItem.setQuantity(cartItemDTO.getQuantity());
+		cartItem.setUser(customer);
+		cartItem.setSubTotal(cartItem.getQuantity()*product.getPrice());
+		return shoppingCartServices.addProduct(cartItem);
+		
+	}
+	
+//	@PutMapping("/cart/put/{uid}/{pid}")//Post
+//	public CartItem addquantity(@PathVariable("pid") Long productId,
+//			@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId) {
+//		Customer customer=userRepository.getReferenceById(customerId);
+//		return shoppingCartServices.putQuantity(productId, cartItem.getQuantity(), customer);
+//	}
+//	
+//	
+//	@Transactional
+//	@DeleteMapping("/cart/remove/{cid}")
+//	public void removeProductFromCart(@PathVariable("cid") Long cartId) {		
+//		shoppingCartServices.removeProduct(cartId);
+//	}
+//	
+//
+//	
+//	@GetMapping("/cart/get")
+//	public List<CartItem> getAllCartItems(){
+//		return cartItemRepository.findAll();
+//	}
+//	
+//	@GetMapping("/cart/sum/{uid}")
+//	public float getCartSum(@PathVariable("uid") Long userId) {
+//		Customer customer=userRepository.getReferenceById(userId);
+//		List<CartItem> cartItems=shoppingCartServices.listCartItems(customer);
+//		float sum = 0;
+//		for(CartItem c:cartItems) {
+//			float sumLong=shoppingCartServices.cartSum(c,userId);
+//			sum = sum+sumLong;
+//		}
+//
+//		return sum;
+//	}
+//	
 	
 	
 	

@@ -5,10 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 
 @Entity
-public class UserProfile {
+public class Users {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long userId;
 	@Column(unique = true)
@@ -18,7 +20,58 @@ public class UserProfile {
 	@Column(unique = true)
 	private String email;
 	@Column(nullable = false)
-	private String fullName;
+	private String firstName;
+	@Column(nullable = false)
+	private String lastName;
+	
+	@Column(length=10)
+	private String mobile;
+	
+	@ManyToOne
+	@JoinColumn(name="shipping_id")
+	private ShippingAddress shippingAddress;
+	@ManyToOne
+	@JoinColumn(name="billing_id")
+	private BillingAddress billingAddress;
+	@ManyToOne
+	@JoinColumn(name="paymnetInfo_id")
+	private PaymentInformation paymentInformation;
+	public BillingAddress getBillingAddress() {
+		return billingAddress;
+	}
+	public void setBillingAddress(BillingAddress billingAddress) {
+		this.billingAddress = billingAddress;
+	}
+	public PaymentInformation getPaymentInformation() {
+		return paymentInformation;
+	}
+	public void setPaymentInformation(PaymentInformation paymentInformation) {
+		this.paymentInformation = paymentInformation;
+	}
+	public ShippingAddress getShippingAddress() {
+		return shippingAddress;
+	}
+	public void setShippingAddress(ShippingAddress shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 	public Long getUserId() {
 		return userId;
 	}
@@ -31,12 +84,7 @@ public class UserProfile {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getFullName() {
-		return fullName;
-	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+
 	public String getUserName() {
 		return userName;
 	}

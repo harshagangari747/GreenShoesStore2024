@@ -17,11 +17,17 @@ public class Orders {
 	private float totalPrice;
 	private int quantity;
 	@ManyToOne
-	@JoinColumn(name="product_Id")
-	private Product product;
+	@JoinColumn(name="productSizeColor_Id")
+	private ProductSizeColor productSizeColor;
+	
 	@ManyToOne
-	@JoinColumn(name="address_Id")
-	private Address addressId;
+	@JoinColumn(name="payment_id")
+	private PaymentInformation payment;
+	
+	@ManyToOne
+	@JoinColumn(name="shipping_id")
+	private ShippingAddress shippingAddress;
+	
 	public Long getOrderID() {
 		return orderID;
 	}
@@ -46,17 +52,11 @@ public class Orders {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public Product getProduct() {
-		return product;
+	public ProductSizeColor getProductSizeColor() {
+		return productSizeColor;
 	}
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-	public Address getAddressId() {
-		return addressId;
-	}
-	public void setAddressId(Address addressId) {
-		this.addressId = addressId;
+	public void setProductSizeColor(ProductSizeColor productSizeColor) {
+		this.productSizeColor = productSizeColor;
 	}
 	
 }
