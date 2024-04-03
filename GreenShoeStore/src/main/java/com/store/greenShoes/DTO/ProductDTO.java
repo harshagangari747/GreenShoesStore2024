@@ -2,7 +2,6 @@ package com.store.greenShoes.DTO;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
@@ -10,7 +9,7 @@ import com.store.greenShoes.model.Size;
 
 public class ProductDTO {
 	private Product product;
-	private List<Size> sizes= new ArrayList<>();
+	private List<Size> sizes = new ArrayList<>();
 	private List<Color> colors;
 	private List<Image> images;
 //	private Long id;
@@ -72,32 +71,37 @@ public class ProductDTO {
 //	public void setQuantity(Long quantity) {
 //		this.quantity = quantity;
 //	}
-	
+
 	public List<Color> getColors() {
 		return colors;
 	}
+
 	public void setColors(List<Color> colors) {
 		this.colors = colors;
 	}
+
 	public List<Image> getImages() {
 		return images;
 	}
+
 	public void setImages(List<Image> images) {
 		this.images = images;
 	}
+
 	public Product getProduct() {
 		return product;
 	}
+
 	public void setProduct(Product product) {
 		this.product = product;
 	}
+
 	public List<Size> getSizes() {
 		return sizes;
 	}
+
 	public void setSizes(List<Size> sizes) {
 		this.sizes = sizes;
 	}
-	
-	
 
 }

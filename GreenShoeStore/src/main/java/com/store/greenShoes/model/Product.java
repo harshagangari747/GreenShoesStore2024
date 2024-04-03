@@ -1,58 +1,33 @@
 package com.store.greenShoes.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 
 @Entity
 @Table(name = "product")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	//var productID=567;
-	
+
 	private String name;
-	
-	//private String picture;
-	
+
 	private float price;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "catagoryID")
 	private Category category;
-	
-	private String description;
-	
-//	@OneToMany(mappedBy = "productId",cascade = CascadeType.ALL, orphanRemoval = true)
-//	private List<Size> sizes= new ArrayList<>();
-//	
-//	public void addSize(Size size) {
-//		size.setProductId(this);
-//        this.sizes.add(size);
-//    }
-//	
-//	public void removeSize(Size size) {
-//        sizes.remove(size);
-//        size.setProductId(null);
-//    }
 
+	private String description;
 
 	public Product() {
 		super();
@@ -98,8 +73,4 @@ public class Product {
 		this.description = description;
 	}
 
-
-		
-	
-	
 }

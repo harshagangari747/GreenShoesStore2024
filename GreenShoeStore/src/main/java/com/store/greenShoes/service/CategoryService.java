@@ -1,18 +1,22 @@
 package com.store.greenShoes.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.model.Category;
 import com.store.greenShoes.repository.CategoryRepository;
+
 @Service
 public class CategoryService {
 	@Autowired
 	CategoryRepository categoryRepository;
-	
+
 	public List<Category> getAllCategories(Integer page, Integer size) {
 		PageRequest pageable = PageRequest.of(page, size);
 		return categoryRepository.findAll(pageable).getContent();
@@ -23,8 +27,6 @@ public class CategoryService {
 	}
 
 	public Category getOne(String name) {
-		
-			return categoryRepository.getByCategory(name);
-		
+		return categoryRepository.getByCategory(name);
 	}
 }
