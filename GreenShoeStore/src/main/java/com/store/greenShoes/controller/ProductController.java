@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +14,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.service.ProductService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class ProductController {
@@ -38,15 +43,16 @@ public class ProductController {
 
 	}
 
-	@PostMapping("/product")
-	private ResponseEntity<Product> postProduct(@RequestBody ProductDTO product) {
+	@PostMapping(value = "product", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE })
+	private ResponseEntity<Object> postProduct(@RequestPart("image") List<MultipartFile> productImages,
+			@RequestPart("product") ProductDTO product) {
 		try {
-			Product product1 = productService.postProduct(product);
+			Product product1 = productService.postProduct(product, productImages);
 			return ResponseEntity.ok(product1);
 
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(null);
-		} 
+			return ResponseEntity.badRequest().body(new String(e.getMessage()));
+		}
 	}
 
 //	@PostMapping("/products")
