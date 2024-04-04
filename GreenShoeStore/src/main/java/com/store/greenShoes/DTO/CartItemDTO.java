@@ -1,6 +1,14 @@
 package com.store.greenShoes.DTO;
 
+
 public class CartItemDTO {
+	private Long cartId;
+	public Long getCartId() {
+		return cartId;
+	}
+	public void setCartId(Long cartId) {
+		this.cartId = cartId;
+	}
 	private Long productId;
 	private Long userId;
 	private Long quantity;

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.store.greenShoes.DTO.CartItemDTO;
 import com.store.greenShoes.model.CartItem;
 
 import com.store.greenShoes.model.Product;
@@ -25,26 +26,19 @@ public class ShoppingCartServices {
 	public List<CartItem> listCartItems(Users customer){
 		return cartItemRepository.findByUser(customer);
 	}
-//	public CartItem putQuantity(Long productId, Long quantity, Customer customer) {//edit
-//		long addedQuantity=quantity;
-//		
-//		Product product=productRepository.getReferenceById(productId);
-//		
-//		CartItem cartItem=cartItemRepository.findByUserAndProduct(customer, product);
-//		
-//		cartItem.setQuantity(addedQuantity);
-//		cartItem.setSubTotal(quantity*product.getPrice());
-//		CartItem c=cartItemRepository.save(cartItem);
-//		
-//		return c;
-//		
-//	}
-//
-//	public void removeProduct(Long cartId) {
-//		cartItemRepository.deleteById(cartId);
-//	}
+	public CartItemDTO putQuantity(CartItemDTO cartItemDTO) {//edit
+		CartItem cartItem = cartItemRepository.getReferenceById(cartItemDTO.getCartId());
+		cartItem.setQuantity(cartItemDTO.getQuantity());
+		CartItem cartItem2= cartItemRepository.save(cartItem);
+		return cartItemDTO;
+		
+		
+	}
 
-	//Post 
+	public void removeProduct(Long cartId) {
+		cartItemRepository.deleteById(cartId);
+	}
+
 	public CartItem addProduct(CartItem cartItem) {
 		
 		return cartItemRepository.save(cartItem);

@@ -2,6 +2,7 @@ package com.store.greenShoes.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,6 +60,7 @@ public class ShoppingCartController {
 		
 		for(CartItem c:cartItems) {
 			CartItemDTO ctd=new CartItemDTO();
+			ctd.setCartId(c.getId());
 			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
 			ctd.setProductId(c.getProductSizeColor().getProductId().getId());
 			ctd.setQuantity(c.getQuantity());
@@ -75,33 +77,28 @@ public class ShoppingCartController {
 		Users customer=userRepository.getReferenceById(cartItemDTO.getUserId());
 		Size size=sizeRepository.getReferenceById(cartItemDTO.getSizeId());
 		Color color=colorRepository.getReferenceById(cartItemDTO.getColorId());
-		ProductSizeColor psc=new ProductSizeColor();
-		psc.setColorId(color);
-		psc.setProductId(product);
-		psc.setSizeId(size);
+		Long quantity=cartItemDTO.getQuantity();
 		ProductSizeColor psc1= productSizeColorRepository.findByProductSizeColor(product, size,color);
 		CartItem cartItem= new CartItem();
 		cartItem.setProductSizeColor(psc1);
-		cartItem.setQuantity(cartItemDTO.getQuantity());
+		cartItem.setQuantity(quantity);
 		cartItem.setUser(customer);
 		cartItem.setSubTotal(cartItem.getQuantity()*product.getPrice());
 		return shoppingCartServices.addProduct(cartItem);
 		
 	}
 	
-//	@PutMapping("/cart/put/{uid}/{pid}")//Post
-//	public CartItem addquantity(@PathVariable("pid") Long productId,
-//			@RequestBody CartItem cartItem,@PathVariable("uid") Long customerId) {
-//		Customer customer=userRepository.getReferenceById(customerId);
-//		return shoppingCartServices.putQuantity(productId, cartItem.getQuantity(), customer);
-//	}
-//	
-//	
-//	@Transactional
-//	@DeleteMapping("/cart/remove/{cid}")
-//	public void removeProductFromCart(@PathVariable("cid") Long cartId) {		
-//		shoppingCartServices.removeProduct(cartId);
-//	}
+	@PutMapping("/cart")
+	public CartItemDTO addquantity(@RequestBody CartItemDTO cartItemDTO) {
+		return shoppingCartServices.putQuantity(cartItemDTO);
+	}
+	
+	
+	@Transactional
+	@DeleteMapping("/cart/remove/{cid}")
+	public void removeProductFromCart(@PathVariable("cid") Long cartId) {		
+		shoppingCartServices.removeProduct(cartId);
+	}
 //	
 //
 //	
