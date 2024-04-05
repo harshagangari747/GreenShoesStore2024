@@ -1,12 +1,12 @@
 package com.store.greenShoes.service;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.DTO.ColorQuantityDTO;
 import com.store.greenShoes.DTO.ProductDTO;
@@ -36,26 +36,27 @@ public class ProductService {
 	@Autowired
 	ProductSizeColorRepository productSizeColorRepository;
 	String projectDirectory = System.getProperty("user.dir");
-	private final String FOLDER_PATH=projectDirectory+"/Images/";
-	//CRUD
+	private final String FOLDER_PATH = projectDirectory + "/Images/";
+
+	// CRUD
 	public List<ProductDTO> getAllProducts(Integer page, Integer sizes) {
 		PageRequest pageable = PageRequest.of(page, sizes);
-		List<ProductDTO> DTO=new ArrayList<>();
-		
-		List<Product> products=productRepository.findAll();
-		for(Product product:products) {
-			ProductDTO prodDTO=new ProductDTO();
+		List<ProductDTO> DTO = new ArrayList<>();
+
+		List<Product> products = productRepository.findAll();
+		for (Product product : products) {
+			ProductDTO prodDTO = new ProductDTO();
 			System.out.println(product.getDescription());
-			List<ProductSizeColor> psc=productSizeColorRepository.findByProduct(product);
-			List<SizeColorDTO> scdList=new ArrayList<>();
-			for(ProductSizeColor psc1: psc) {
-				Size size=psc1.getSizeId();
-				SizeColorDTO scd=new SizeColorDTO();
+			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
+			List<SizeColorDTO> scdList = new ArrayList<>();
+			for (ProductSizeColor psc1 : psc) {
+				Size size = psc1.getSizeId();
+				SizeColorDTO scd = new SizeColorDTO();
 				System.out.println(scd);
-				List<ProductSizeColor> psc2=productSizeColorRepository.findByProductSize(product, size);
-				List<ColorQuantityDTO> cqdList=new ArrayList<>();
-				for(ProductSizeColor psc3:psc2) {
-					ColorQuantityDTO cqd=new ColorQuantityDTO();
+				List<ProductSizeColor> psc2 = productSizeColorRepository.findByProductSize(product, size);
+				List<ColorQuantityDTO> cqdList = new ArrayList<>();
+				for (ProductSizeColor psc3 : psc2) {
+					ColorQuantityDTO cqd = new ColorQuantityDTO();
 					cqd.setColor(psc3.getColorId());
 					cqd.setQuantity(psc3.getQuantity());
 					cqdList.add(cqd);
@@ -70,96 +71,98 @@ public class ProductService {
 			prodDTO.setImages(images);
 			DTO.add(prodDTO);
 		}
-					return DTO;
+		return DTO;
 	}
-@Transactional
-	public Product postProduct(ProductDTO productDTO)  {
-		
-		//product.getSizes().forEach(product.addSize(x=>x.size));
+
+	@Transactional
+	public Product postProduct(ProductDTO productDTO, List<MultipartFile> productImages) {
 		Product product = productDTO.getProduct();
-//		List<Size> sizes=productDTO.getSizes();
-//		List<Color> colors=productDTO.getColors();
-		List<Image> images=productDTO.getImages();
-		List<SizeColorDTO> scd=productDTO.getSizeColorDTO();
-		ProductSizeColor psc=new ProductSizeColor();
-		Product insertedProduct=productRepository.save(product);
-		Long productId=insertedProduct.getId();
-		for(SizeColorDTO s : scd)
-			{
-			
-			Size s1= s.getSize();
-			List<ColorQuantityDTO> colors=s.getColor();
-			for(ColorQuantityDTO c: colors) {
+		List<Image> images = productDTO.getImages();
+		List<SizeColorDTO> scd = productDTO.getSizeColorDTO();
+		ProductSizeColor psc = new ProductSizeColor();
+		Product insertedProduct = productRepository.save(product);
+		Long productId = insertedProduct.getId();
+		List<Image> imagesUploaded = new ArrayList<Image>();
+		for (SizeColorDTO s : scd) {
+
+			Size s1 = s.getSize();
+			List<ColorQuantityDTO> colors = s.getColor();
+			for (ColorQuantityDTO c : colors) {
 				psc.setProductId(insertedProduct);
 				psc.setColorId(c.getColor());
 				psc.setQuantity(c.getQuantity());
 				psc.setSizeId(s1);
 			}
-				
-				productSizeColorRepository.save(psc);
-			}
-//		for(Color c : colors)
-//		{
-//			//c.setProductId(insertedProduct);
-//			colorRepository.save(c);
-//		}
-		for(Image i : images)
-		{
-			i.setProductId(insertedProduct);
-			imageRepository.save(i);
+
+			productSizeColorRepository.save(psc);
 		}
-		
+
+		images = new ArrayList<Image>();
+		for (MultipartFile file : productImages) {
+			try
+			{
+				String awsS3Url = AwsS3Service.GetAwsServiceObj().UploadImages(file);
+				Image imageData = new Image();
+				imageData.setProductId(insertedProduct);
+				imageData.setURL(awsS3Url);
+				images.add(imageData);
+				imagesUploaded.add(imageRepository.save(imageData));
+			}
+			
+			catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+				return null;
+			}
+		}
 		return insertedProduct;
-		
+
 	}
 
 	public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-		Product newProduct=productDTO.getProduct();
+		Product newProduct = productDTO.getProduct();
 		Product oldProduct = productRepository.getReferenceById(id);
 		oldProduct.setName(newProduct.getName());
 		oldProduct.setPrice(newProduct.getPrice());
 		oldProduct.setCategory(newProduct.getCategory());
 		oldProduct.setDescription(newProduct.getDescription());
-		
+
 		productRepository.save(oldProduct);
-		//List<ProductSizeColor> pscList=productSizeColorRepository.findByProduct(oldProduct);
-		List<SizeColorDTO> scdList=productDTO.getSizeColorDTO();
-		List<Image> images=productDTO.getImages();
-		//ProductSizeColor psc=new ProductSizeColor();
-		for(SizeColorDTO s : scdList)
-			{
-			
-			Size s1= s.getSize();
-			//List<ProductSizeColor> psc2=productSizeColorRepository.findByProductSize(oldProduct, s1);
-			List<ColorQuantityDTO> colors=s.getColor();
-			for(ColorQuantityDTO c: colors) {
-				ProductSizeColor psc2=productSizeColorRepository.findByProductSizeColor(oldProduct, s1,c.getColor());
+		// List<ProductSizeColor>
+		// pscList=productSizeColorRepository.findByProduct(oldProduct);
+		List<SizeColorDTO> scdList = productDTO.getSizeColorDTO();
+		List<Image> images = productDTO.getImages();
+		// ProductSizeColor psc=new ProductSizeColor();
+		for (SizeColorDTO s : scdList) {
+
+			Size s1 = s.getSize();
+			// List<ProductSizeColor>
+			// psc2=productSizeColorRepository.findByProductSize(oldProduct, s1);
+			List<ColorQuantityDTO> colors = s.getColor();
+			for (ColorQuantityDTO c : colors) {
+				ProductSizeColor psc2 = productSizeColorRepository.findByProductSizeColor(oldProduct, s1, c.getColor());
 				ProductSizeColor psc3;
-				if(psc2!=null) {
-					psc3=productSizeColorRepository.getReferenceById(psc2.getId());
+				if (psc2 != null) {
+					psc3 = productSizeColorRepository.getReferenceById(psc2.getId());
 					psc3.setQuantity(c.getQuantity());
-				}
-				else {
-					 psc3=new ProductSizeColor();
+				} else {
+					psc3 = new ProductSizeColor();
 					psc3.setProductId(oldProduct);
 					psc3.setColorId(c.getColor());
 					psc3.setQuantity(c.getQuantity());
 					psc3.setSizeId(s1);
 				}
-				
-				
+
 				productSizeColorRepository.save(psc3);
 			}
-				
-				
-			}
+
+		}
 //		for(Color c : colors)
 //		{
 //			//c.setProductId(insertedProduct);
 //			colorRepository.save(c);
 //		}
-		
-		
+
 		return productDTO;
 	}
 
@@ -168,19 +171,19 @@ public class ProductService {
 //	}
 //	
 	public ProductDTO getProductById(Long id) {
-		ProductDTO prodDTO=new ProductDTO();
+		ProductDTO prodDTO = new ProductDTO();
 		Product product = productRepository.getReferenceById(id);
 		System.out.println(product.getDescription());
-		List<ProductSizeColor> psc=productSizeColorRepository.findByProduct(product);
-		List<SizeColorDTO> scdList=new ArrayList<>();
-		for(ProductSizeColor psc1: psc) {
-			Size size=psc1.getSizeId();
-			SizeColorDTO scd=new SizeColorDTO();
+		List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
+		List<SizeColorDTO> scdList = new ArrayList<>();
+		for (ProductSizeColor psc1 : psc) {
+			Size size = psc1.getSizeId();
+			SizeColorDTO scd = new SizeColorDTO();
 			System.out.println(scd);
-			List<ProductSizeColor> psc2=productSizeColorRepository.findByProductSize(product, size);
-			List<ColorQuantityDTO> cqdList=new ArrayList<>();
-			for(ProductSizeColor psc3:psc2) {
-				ColorQuantityDTO cqd=new ColorQuantityDTO();
+			List<ProductSizeColor> psc2 = productSizeColorRepository.findByProductSize(product, size);
+			List<ColorQuantityDTO> cqdList = new ArrayList<>();
+			for (ProductSizeColor psc3 : psc2) {
+				ColorQuantityDTO cqd = new ColorQuantityDTO();
 				cqd.setColor(psc3.getColorId());
 				cqd.setQuantity(psc3.getQuantity());
 				cqdList.add(cqd);
@@ -188,7 +191,7 @@ public class ProductService {
 			scd.setColor(cqdList);
 			scd.setSize(size);
 			scdList.add(scd);
-			
+
 		}
 		List<Image> images = imageRepository.getByProductId(id);
 		prodDTO.setSizeColorDTO(scdList);
@@ -196,7 +199,7 @@ public class ProductService {
 		prodDTO.setImages(images);
 //		List<Size> sizes= sizeRepository.getByProductId(id);
 //		List<Color> colors = colorRepository.getByProductId(id);
-		
+
 //		Product product=productRepository.getReferenceById(id);
 //		ProductDTO DTO=new ProductDTO();
 //		DTO.setSizes(sizes);
