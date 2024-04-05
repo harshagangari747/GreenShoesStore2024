@@ -1,7 +1,5 @@
 package com.store.greenShoes.model;
 
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,31 +26,8 @@ public class CartItem {
 	@JoinColumn(name="customer_id")
 	private Users user;
 	
-//	@ManyToOne
-//	@JoinColumn(name="size_id")
-//	private Size size;
-//	
-//	@ManyToOne
-//	@JoinColumn(name="color_id")
-//	private Color color;
-	
-
-	private Long quantity;
-	
-	private float subTotal;
-	@ManyToOne
-	@JoinColumn(name="productSizeColor_id")
-	private ProductSizeColor productSizeColor;
 
 	
-
-	public ProductSizeColor getProductSizeColor() {
-		return productSizeColor;
-	}
-
-	public void setProductSizeColor(ProductSizeColor productSizeColor) {
-		this.productSizeColor = productSizeColor;
-	}
 
 	public Long getId() {
 		return id;
@@ -62,29 +37,6 @@ public class CartItem {
 		this.id = id;
 	}
 
-
-	
-
-	public Long getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
-
-	
-
-	
-
-	public float getSubTotal() {
-		return subTotal;
-	}
-
-	public void setSubTotal(float subTotal) {
-		this.subTotal = subTotal;
-	}
-
 	public Users getUser() {
 		return user;
 	}
@@ -92,6 +44,10 @@ public class CartItem {
 	public void setUser(Users user) {
 		this.user = user;
 	}
+
+	
+
+	
 
 	
 
