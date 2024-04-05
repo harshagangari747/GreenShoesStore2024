@@ -18,7 +18,18 @@ public class ProductDTO {
 	public void setSizeColorDTO(List<SizeColorDTO> sizeColorDTO) {
 		this.sizeColorDTO = sizeColorDTO;
 	}
+	
+	private List<SizeColorDTO> sizeColorDTO= new ArrayList<>();
 
+	private List<Image> images;
+
+public List<SizeColorDTO> getSizeColorDTO() {
+	return sizeColorDTO;
+}
+public void setSizeColorDTO(List<SizeColorDTO> sizeColorDTO) {
+	this.sizeColorDTO = sizeColorDTO;
+}
+	
 	public List<Image> getImages() {
 		return images;
 	}

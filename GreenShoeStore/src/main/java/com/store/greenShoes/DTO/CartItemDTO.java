@@ -1,8 +1,18 @@
 package com.store.greenShoes.DTO;
 
+import java.util.Optional;
+
 public class CartItemDTO {
+	private Optional<Long> cartId;
+	
+	public Optional<Long> getCartId() {
+		return cartId;
+	}
+	public void setCartId(Optional<Long> cartId) {
+		this.cartId = cartId;
+	}
 	private Long productId;
-	private Long userId;
+	private Optional<Long> userId;
 	private Long quantity;
 	private Long colorId;
 	private Long sizeId;
@@ -12,10 +22,11 @@ public class CartItemDTO {
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
-	public Long getUserId() {
+	
+	public Optional<Long> getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(Optional<Long> userId) {
 		this.userId = userId;
 	}
 	public Long getQuantity() {

@@ -1,6 +1,7 @@
 package com.store.greenShoes.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,7 +15,7 @@ import jakarta.transaction.Transactional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 	@Query("select c from CartItem c where c.user = ?1")
-public List<CartItem> findByUser(Users customer);
+public CartItem findByUser(Users customer);
 	
 	
 //	//public CartItem findByUserAndProduct(Customer customer,Product product);
@@ -31,5 +32,8 @@ public List<CartItem> findByUser(Users customer);
 	@Transactional
 	@Query("delete from CartItem c where c.user.id=?1")
 	public void deleteAll(Long uid);
+
+
+	public CartItem getReferenceById(Optional<Long> cartId);
 	
 }
