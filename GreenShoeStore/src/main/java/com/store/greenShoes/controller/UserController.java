@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.greenShoes.DTO.UserDTO;
 import com.store.greenShoes.model.BillingAddress;
 import com.store.greenShoes.model.PaymentInformation;
 import com.store.greenShoes.model.ShippingAddress;
@@ -28,60 +29,94 @@ public class UserController {
 	@Autowired
 	BillingAddressRepository billingAddressRepository;
 	@PostMapping("/userRegistration")
-	private ResponseEntity<Object> postUser(@RequestBody Users user) {
-		
-//		System.out.println(Base64.getDecoder().decode(code));
-//		String username=new String(Base64.getDecoder().decode(code)).split(":")[0];
-//		String password=new String(Base64.getDecoder().decode(code)).split(":")[1];
-		String existingUser= user.getUserName();
-		if(!(existingUser==null)) {
+	private ResponseEntity<Object> postUser(@RequestBody UserDTO userDTO) {
+		Users user; 
+		String userName=userDTO.getUserName();
+		user=userRepository.getByUserName(userName);
+		if(!(user==null)) {
+			System.out.println(user.getUserName());
 			return ResponseEntity.badRequest().body("The user is already Present, Failed to Create new User");
 		}
-		return  ResponseEntity.ok(userRepository.save(user));
+		else {
+		user=new Users();
+		user.setUserName(userName);
+		user.setPassword(userDTO.getPassword());
+		user.setEmail(userDTO.getEmail());
+		user.setFirstName(userDTO.getFirstName());
+		user.setLastName(userDTO.getLastName());
+		user.setMobile(userDTO.getMobile());
+		user.setRole("User");
+		return ResponseEntity.ok(userRepository.save(user));}
+	}
+	@GetMapping("/userRegistration/{uid}")
+	private UserDTO getUser(@PathVariable("uid") Long id) {
+		Users user=userRepository.getReferenceById(id);
+		UserDTO userDTO=new UserDTO();
+		userDTO.setEmail(user.getEmail());
+		userDTO.setFirstName(user.getFirstName());
+		userDTO.setLastName(user.getLastName());
+		userDTO.setMobile(user.getMobile());
+		userDTO.setUserName(user.getUserName());
+		return userDTO;
+	}
+	
+	@PostMapping("/userShippingAddress/{uid}")
+	private ResponseEntity<Object> postShippingAddress(@RequestBody ShippingAddress address, @PathVariable("uid") Long uid){
+		ShippingAddress shippingAddress=shippingRepository.save(address);
+		Users user=userRepository.getReferenceById(uid);
+		user.setShippingAddress(shippingAddress);
+		userRepository.save(user);
+		return ResponseEntity.ok(shippingAddress);
+		
+	}
+	
+	@PostMapping("/userBillingAddress/{uid}")
+	private ResponseEntity<Object> postBillingAddress(@RequestBody BillingAddress address, @PathVariable("uid") Long uid){
+		BillingAddress billingAddress = billingAddressRepository.save(address);
+		Users user=userRepository.getReferenceById(uid);
+		PaymentInformation paymentInformation=user.getPaymentInformation();
+		if(paymentInformation!=null) {
+			paymentInformation=paymentRepository.getReferenceById(paymentInformation.getPaymentId());
+			paymentInformation.setBillingAddress(billingAddress);
+			paymentRepository.save(paymentInformation);
 		}
+		user.setBillingAddress(billingAddress);
+		userRepository.save(user);
+		return ResponseEntity.ok(billingAddress);
+	}
 	
-	@PostMapping("/userShippingAddress")
-	private ResponseEntity<Object> postShippingAddress(@RequestBody ShippingAddress address){
-		return ResponseEntity.ok(shippingRepository.save(address));
+	@PostMapping("/userPaymentInformation/{uid}")
+	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment,@PathVariable("uid") Long uid){
+		PaymentInformation paymentInformation = paymentRepository.save(payment);
+		Users user=userRepository.getReferenceById(uid);
+		BillingAddress billingAddress=user.getBillingAddress();
+		if(billingAddress!=null) {
+			paymentInformation=paymentRepository.getReferenceById(uid);
+			paymentInformation.setBillingAddress(billingAddress);
+			paymentInformation=paymentRepository.save(paymentInformation);
+		}
+		user.setPaymentInformation(paymentInformation);
+		userRepository.save(user);
+		return ResponseEntity.ok(paymentInformation);
 		
 	}
 	
-	@PostMapping("/userBillingAddress")
-	private ResponseEntity<Object> postBillingAddress(@RequestBody BillingAddress address){
-		return ResponseEntity.ok(billingAddressRepository.save(address));
-		
+	@GetMapping("/userShippingAddress/{uid}")
+	private ShippingAddress getShippingAddress(@PathVariable("uid") Long id ) {
+		Users user = userRepository.getReferenceById(id);
+		return shippingRepository.getReferenceById(user.getShippingAddress().getId());
+	}
+	@GetMapping("/userBillingAddress/{uid}")
+	private BillingAddress getBillingAddress(@PathVariable("uid") Long id ) {
+		Users user = userRepository.getReferenceById(id);
+		return billingAddressRepository.getReferenceById(user.getBillingAddress().getId());
+	}
+	@GetMapping("/userPaymentInformation/{uid}")
+	private PaymentInformation getPayment(@PathVariable("uid") Long id ) {
+		Users user = userRepository.getReferenceById(id);
+		return paymentRepository.getReferenceById(user.getPaymentInformation().getPaymentId());
 	}
 	
-	@PostMapping("/userPaymentInformation")
-	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment){
-		return ResponseEntity.ok(paymentRepository.save(payment));
-		
-	}
-	
-	@GetMapping("/userShippingAddress/{id}")
-	private ShippingAddress getShippingAddress(@PathVariable("id") Long id ) {
-		return shippingRepository.getReferenceById(id);
-	}
-	@GetMapping("/userBillingAddress/{id}")
-	private BillingAddress getBillingAddress(@PathVariable("id") Long id ) {
-		return billingAddressRepository.getReferenceById(id);
-	}
-	@GetMapping("/userPaymentInformation/{id}")
-	private PaymentInformation getPayment(@PathVariable("id") Long id ) {
-		return paymentRepository.getReferenceById(id);
-	}
-	
-//@PostMapping("/adminRegistration")
-//private ResponseEntity<Object> postAdmin(@RequestBody Users admin) {
-//	
-//	Users existingUser= userProfile.getByUserName(admin.getUserName());
-//	if(!(existingUser==null)) {
-//		System.out.println(existingUser.getUserName());
-//		return ResponseEntity.badRequest().body("The Admin is already Present, Failed to Create new User");
-//	}
-//	
-//	
-//	return  ResponseEntity.ok(userProfile.save(admin));}
-//	
+
 
 }

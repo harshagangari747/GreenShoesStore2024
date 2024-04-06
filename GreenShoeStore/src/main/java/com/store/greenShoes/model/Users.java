@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 
 @Entity
@@ -27,13 +27,13 @@ public class Users {
 	@Column(length=10)
 	private String mobile;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name="shipping_id")
 	private ShippingAddress shippingAddress;
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name="billing_id")
 	private BillingAddress billingAddress;
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name="paymnetInfo_id")
 	private PaymentInformation paymentInformation;
 	public BillingAddress getBillingAddress() {
