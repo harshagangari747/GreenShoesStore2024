@@ -8,7 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 
-@Entity
+//@Entity
 public class GuestOrders {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long guestId;

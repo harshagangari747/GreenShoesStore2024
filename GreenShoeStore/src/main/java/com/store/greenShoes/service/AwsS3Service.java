@@ -20,7 +20,7 @@ public class AwsS3Service {
 	private static S3Client s3ClientObj;
 	private final Region s3Region = Region.US_EAST_1;
 	private final String s3BucketName = "web-shoes-images-bucket";
-	private final String accessKey = "", secretKey = "";
+	private final String accessKey = "AKIAQ3EGQB3KCKD67FDB", secretKey = "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";
 	private final AwsCredentials webShoeCredentials;
 	private static AwsS3Service awsServiceObj;
 

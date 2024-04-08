@@ -34,7 +34,7 @@ public class Users {
 	@JoinColumn(name="billing_id")
 	private BillingAddress billingAddress;
 	@OneToOne
-	@JoinColumn(name="paymnetInfo_id")
+	@JoinColumn(name="paymentInfo_id")
 	private PaymentInformation paymentInformation;
 	public BillingAddress getBillingAddress() {
 		return billingAddress;

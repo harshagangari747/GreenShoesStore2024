@@ -15,10 +15,9 @@ public class Orders {
 	private Long orderID;
 	private Date orderDate;
 	private float totalPrice;
-	private int quantity;
-	@ManyToOne
-	@JoinColumn(name="productSizeColor_Id")
-	private ProductSizeColor productSizeColor;
+//	@ManyToOne
+//	@JoinColumn(name="productSizeColor_Id")
+//	private ProductSizeColor productSizeColor;
 	
 	@ManyToOne
 	@JoinColumn(name="payment_id")
@@ -28,6 +27,28 @@ public class Orders {
 	@JoinColumn(name="shipping_id")
 	private ShippingAddress shippingAddress;
 	
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	private Users user;
+	
+	public PaymentInformation getPayment() {
+		return payment;
+	}
+	public void setPayment(PaymentInformation payment) {
+		this.payment = payment;
+	}
+	public ShippingAddress getShippingAddress() {
+		return shippingAddress;
+	}
+	public void setShippingAddress(ShippingAddress shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+	public Users getUser() {
+		return user;
+	}
+	public void setUser(Users user) {
+		this.user = user;
+	}
 	public Long getOrderID() {
 		return orderID;
 	}
@@ -46,17 +67,6 @@ public class Orders {
 	public void setTotalPrice(float totalPrice) {
 		this.totalPrice = totalPrice;
 	}
-	public int getQuantity() {
-		return quantity;
-	}
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-	public ProductSizeColor getProductSizeColor() {
-		return productSizeColor;
-	}
-	public void setProductSizeColor(ProductSizeColor productSizeColor) {
-		this.productSizeColor = productSizeColor;
-	}
+	
 	
 }
