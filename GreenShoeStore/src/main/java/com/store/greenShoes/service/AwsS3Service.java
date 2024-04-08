@@ -10,8 +10,6 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.*;
@@ -54,20 +52,20 @@ public class AwsS3Service {
 	}
 
 	public String UploadImages(MultipartFile f) throws Exception {
-		File newFile = new File(".\\TempImages\\" + f.getOriginalFilename());
+		//File newFile = new File(".\\TempImages\\" + f.getOriginalFilename());
 		String fileName = f.getOriginalFilename();
 		ByteArrayInputStream fileByteArrayInputStream;
 		String url = "";
 		try {
-			FileOutputStream fos = new FileOutputStream(newFile);
-			fos.write(f.getBytes());
-			fos.close();
+//			FileOutputStream fos = new FileOutputStream(newFile);
+//			fos.write(f.getBytes());
+//			fos.close();
 
 			fileByteArrayInputStream = new ByteArrayInputStream(f.getBytes());
 
 			PutObjectRequest request = PutObjectRequest.builder().bucket(s3BucketName).key(fileName)
 					.acl(ObjectCannedACL.PUBLIC_READ).build();
-			s3ClientObj.putObject(request, RequestBody.fromInputStream(fileByteArrayInputStream, newFile.length()));
+			s3ClientObj.putObject(request, RequestBody.fromInputStream(fileByteArrayInputStream, f.getSize()));
 			GetUrlRequest urlRequest = GetUrlRequest.builder().bucket(s3BucketName).key(fileName).build();
 			url = s3ClientObj.utilities().getUrl(urlRequest).toExternalForm();
 			return url;
