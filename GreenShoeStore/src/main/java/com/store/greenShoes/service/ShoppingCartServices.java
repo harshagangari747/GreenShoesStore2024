@@ -13,7 +13,6 @@ import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.model.ProductSizeColor;
 import com.store.greenShoes.model.Size;
-import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.CartColorSizeProductRepository;
 import com.store.greenShoes.repository.CartItemRepository;
 import com.store.greenShoes.repository.ColorRepository;
