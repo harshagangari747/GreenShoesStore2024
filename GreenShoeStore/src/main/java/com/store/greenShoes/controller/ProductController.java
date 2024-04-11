@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.DTO.AllProductsDTO;
+import com.store.greenShoes.DTO.ProductCartDTO;
 import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.service.ProductService;
@@ -78,6 +79,12 @@ public class ProductController {
 	private List<Product> getProductsByCategory(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size, @PathVariable("category") Long categoryId){
 		return productService.getProductsByCategory(page, size, categoryId);
+	}
+	
+	@GetMapping("/productBySizeColor/{pid}/{sid}/{cid}")
+	private ProductCartDTO getProductBySizeColor(@PathVariable("pid")Long pid,@PathVariable("sid")Long sid, @PathVariable("cid")Long cid) {
+		
+		return productService.getProductBySizeColor(pid,sid,cid);
 	}
 //	
 //	@GetMapping("/product/search")

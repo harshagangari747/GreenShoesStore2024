@@ -1,7 +1,9 @@
 package com.store.greenShoes.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -10,8 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.store.greenShoes.DTO.AllProductsDTO;
 import com.store.greenShoes.DTO.ColorQuantityDTO;
+import com.store.greenShoes.DTO.ProductCartDTO;
 import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.DTO.SizeColorDTO;
+import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.model.ProductSizeColor;
@@ -56,8 +60,8 @@ public class ProductService {
 			prodDTO.setPrice(product.getPrice());
 			prodDTO.setName(product.getName());
 			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
-			List<Float> prodSizes=new ArrayList<>();
-			List<String> prodColors=new ArrayList<>();
+			Set<Float> prodSizes=new HashSet<>();
+			Set<String> prodColors=new HashSet<>();
 			for (ProductSizeColor psc1 : psc) {
 				float size = psc1.getSizeId().getSize();
 				prodSizes.add(size);
@@ -256,6 +260,25 @@ public class ProductService {
 //        file.transferTo(new File(filePath));
 //        return filePath;
 //    }
+
+	public ProductCartDTO getProductBySizeColor(Long pid, Long sid,Long cid) {
+		
+		//ProductCartDTO pcDTO=new ProductCartDTO();
+		Product product=productRepository.getReferenceById(pid);
+		Size size=sizeRepository.getReferenceById(sid);
+		Color color=colorRepository.getReferenceById(cid);
+		ProductSizeColor psc= productSizeColorRepository.findByProductSizeColor(product,size,color);
+		ProductCartDTO productDTO=new ProductCartDTO();
+		productDTO.setColorId(cid);
+		productDTO.setSizeId(sid);
+		productDTO.setProductId(pid);
+		productDTO.setColorName(color.getColor());
+		productDTO.setSize(size.getSize());
+		productDTO.setPrice(product.getPrice());
+		productDTO.setQuantity(psc.getQuantity());
+		productDTO.setProductName(product.getName());
+		return productDTO;
+	}
 
 
 //    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {

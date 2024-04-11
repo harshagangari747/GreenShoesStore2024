@@ -1,14 +1,15 @@
 package com.store.greenShoes.DTO;
 
-import java.util.List;
+
+import java.util.Set;
 
 public class AllProductsDTO {
 	private Long productId;
 	private String name;
 	private float price;
 	private String Category;
-	private List<String> color_names;
-	private List<Float> sizes;
+	private Set<String> color_names;
+	private Set<Float> sizes;
 	public Long getProductId() {
 		return productId;
 	}
@@ -33,18 +34,19 @@ public class AllProductsDTO {
 	public void setCategory(String category) {
 		Category = category;
 	}
-	public List<String> getColor_names() {
+	public Set<String> getColor_names() {
 		return color_names;
 	}
-	public void setColor_names(List<String> color_names) {
+	public void setColor_names(Set<String> color_names) {
 		this.color_names = color_names;
 	}
-	public List<Float> getSizes() {
+	public Set<Float> getSizes() {
 		return sizes;
 	}
-	public void setSizes(List<Float> sizes) {
+	public void setSizes(Set<Float> sizes) {
 		this.sizes = sizes;
 	}
+	
 	
 
 }
