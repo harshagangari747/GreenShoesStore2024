@@ -1,6 +1,6 @@
 package com.store.greenShoes.model;
 
-import java.sql.Date;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +15,9 @@ public class PaymentInformation {
 	private Long paymentId;
 	@Column(length=16)
 	private Long ccNumber;
-	private Date expirationDate;
+	private int expYear;
+	private int expMonth;
+	//private Date expirationDate;
 	private int cvv;
 	@OneToOne
 	@JoinColumn(name ="billing_id")
@@ -44,12 +46,25 @@ public class PaymentInformation {
 	public void setCcNumber(Long ccNumber) {
 		this.ccNumber = ccNumber;
 	}
-	public Date getExpirationDate() {
-		return expirationDate;
+	public int getExpYear() {
+		return expYear;
 	}
-	public void setExpirationDate(Date expirationDate) {
-		this.expirationDate = expirationDate;
+	public void setExpYear(int expYear) {
+		this.expYear = expYear;
 	}
+	public int getExpMonth() {
+		return expMonth;
+	}
+	public void setExpMonth(int expMonth) {
+		this.expMonth = expMonth;
+	}
+	
+//	public Date getExpirationDate() {
+//		return expirationDate;
+//	}
+//	public void setExpirationDate(Date expirationDate) {
+//		this.expirationDate = expirationDate;
+//	}
 	
 
 }
