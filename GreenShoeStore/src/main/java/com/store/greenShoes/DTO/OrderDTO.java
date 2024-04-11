@@ -12,6 +12,13 @@ public class OrderDTO {
 	private Long OrderId;
 	private Date orderDate;
 	private Long userId;
+	private Long cartId;
+	public Long getCartId() {
+		return cartId;
+	}
+	public void setCartId(Long cartId) {
+		this.cartId = cartId;
+	}
 	private List<ProductSizeColorDTO> productSizeColorList;
 	private float total;
 	private ShippingAddress shippingAddress;

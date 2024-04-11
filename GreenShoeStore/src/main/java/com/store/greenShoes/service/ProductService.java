@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.store.greenShoes.DTO.AllProductsDTO;
 import com.store.greenShoes.DTO.ColorQuantityDTO;
 import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.DTO.SizeColorDTO;
@@ -15,6 +16,7 @@ import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.model.ProductSizeColor;
 import com.store.greenShoes.model.Size;
+import com.store.greenShoes.repository.CategoryRepository;
 import com.store.greenShoes.repository.ColorRepository;
 import com.store.greenShoes.repository.ImageRepository;
 import com.store.greenShoes.repository.ProductRepository;
@@ -25,6 +27,8 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ProductService {
+	@Autowired
+	CategoryRepository categoryRepository;
 	@Autowired
 	ProductRepository productRepository;
 	@Autowired
@@ -39,39 +43,56 @@ public class ProductService {
 	private final String FOLDER_PATH = projectDirectory + "/Images/";
 
 	// CRUD
-	public List<ProductDTO> getAllProducts(Integer page, Integer sizes) {
+	public List<AllProductsDTO> getAllProducts(Integer page, Integer sizes) {
 		PageRequest pageable = PageRequest.of(page, sizes);
-		List<ProductDTO> DTO = new ArrayList<>();
+		List<AllProductsDTO> allProductsDTO = new ArrayList<>();
 
 		List<Product> products = productRepository.findAll();
 		for (Product product : products) {
-			ProductDTO prodDTO = new ProductDTO();
+			AllProductsDTO prodDTO = new AllProductsDTO();
 			System.out.println(product.getDescription());
+			prodDTO.setCategory(product.getCategory().getCategory());
+			prodDTO.setProductId(product.getId());
+			prodDTO.setPrice(product.getPrice());
+			prodDTO.setName(product.getName());
 			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
-			List<SizeColorDTO> scdList = new ArrayList<>();
+			List<Float> prodSizes=new ArrayList<>();
+			List<String> prodColors=new ArrayList<>();
 			for (ProductSizeColor psc1 : psc) {
-				Size size = psc1.getSizeId();
-				SizeColorDTO scd = new SizeColorDTO();
-				System.out.println(scd);
-				List<ProductSizeColor> psc2 = productSizeColorRepository.findByProductSize(product, size);
-				List<ColorQuantityDTO> cqdList = new ArrayList<>();
-				for (ProductSizeColor psc3 : psc2) {
-					ColorQuantityDTO cqd = new ColorQuantityDTO();
-					cqd.setColor(psc3.getColorId());
-					cqd.setQuantity(psc3.getQuantity());
-					cqdList.add(cqd);
-				}
-				scd.setColor(cqdList);
-				scd.setSize(size);
-				scdList.add(scd);
+				float size = psc1.getSizeId().getSize();
+				prodSizes.add(size);
+				String color=psc1.getColorId().getColor();
+				prodColors.add(color);
+				
 			}
-			List<Image> images = imageRepository.getByProductId(product.getId());
-			prodDTO.setSizeColorDTO(scdList);
-			prodDTO.setProduct(product);
-			prodDTO.setImages(images);
-			DTO.add(prodDTO);
+			prodDTO.setSizes(prodSizes);
+			prodDTO.setColor_names(prodColors);
+			allProductsDTO.add(prodDTO);
+			
+//			List<SizeColorDTO> scdList = new ArrayList<>();
+//			for (ProductSizeColor psc1 : psc) {
+//				Size size = psc1.getSizeId();
+//				SizeColorDTO scd = new SizeColorDTO();
+//				System.out.println(scd);
+//				List<ProductSizeColor> psc2 = productSizeColorRepository.findByProductSize(product, size);
+//				List<ColorQuantityDTO> cqdList = new ArrayList<>();
+//				for (ProductSizeColor psc3 : psc2) {
+//					ColorQuantityDTO cqd = new ColorQuantityDTO();
+//					cqd.setColor(psc3.getColorId());
+//					cqd.setQuantity(psc3.getQuantity());
+//					cqdList.add(cqd);
+//				}
+//				scd.setColor(cqdList);
+//				scd.setSize(size);
+//				scdList.add(scd);
+//			}
+//			List<Image> images = imageRepository.getByProductId(product.getId());
+//			prodDTO.setSizeColorDTO(scdList);
+//			prodDTO.setProduct(product);
+//			prodDTO.setImages(images);
+//			DTO.add(prodDTO);
 		}
-		return DTO;
+		return allProductsDTO;
 	}
 
 	@Transactional
@@ -79,7 +100,7 @@ public class ProductService {
 		Product product = productDTO.getProduct();
 		List<Image> images = productDTO.getImages();
 		List<SizeColorDTO> scd = productDTO.getSizeColorDTO();
-		ProductSizeColor psc = new ProductSizeColor();
+		//ProductSizeColor psc = new ProductSizeColor();
 		Product insertedProduct = productRepository.save(product);
 		Long productId = insertedProduct.getId();
 		List<Image> imagesUploaded = new ArrayList<Image>();
@@ -88,13 +109,15 @@ public class ProductService {
 			Size s1 = s.getSize();
 			List<ColorQuantityDTO> colors = s.getColor();
 			for (ColorQuantityDTO c : colors) {
+				ProductSizeColor psc = new ProductSizeColor();
 				psc.setProductId(insertedProduct);
 				psc.setColorId(c.getColor());
 				psc.setQuantity(c.getQuantity());
 				psc.setSizeId(s1);
+				productSizeColorRepository.save(psc);
 			}
 
-			productSizeColorRepository.save(psc);
+			
 		}
 
 		images = new ArrayList<Image>();
@@ -164,6 +187,8 @@ public class ProductService {
 //		}
 
 		return productDTO;
+		
+		
 	}
 
 //	public void deleteProduct(Long id) {
@@ -209,10 +234,10 @@ public class ProductService {
 		return prodDTO;
 	}
 //
-//	public List<Product> getProductsByCategory(Integer page, Integer size, String category) {
-//		PageRequest pageable = PageRequest.of(page, size);
-//		return productRepository.findByCategory(category, pageable);
-//	}
+	public List<Product> getProductsByCategory(Integer page, Integer size, Long categoryId) {
+		PageRequest pageable = PageRequest.of(page, size);
+		return productRepository.findByCategory(categoryRepository.getReferenceById(categoryId), pageable);
+	}
 //
 //	public List<Product> searchProduct(String keyword) {	
 //		return  productRepository.searchProduct(keyword);
@@ -231,6 +256,7 @@ public class ProductService {
 //        file.transferTo(new File(filePath));
 //        return filePath;
 //    }
+
 
 //    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
 //        Optional<Product> fileData = productRepository.findByPicture(fileName);
