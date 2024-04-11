@@ -13,7 +13,6 @@ import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.model.ProductSizeColor;
 import com.store.greenShoes.model.Size;
-import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.CartColorSizeProductRepository;
 import com.store.greenShoes.repository.CartItemRepository;
 import com.store.greenShoes.repository.ColorRepository;
@@ -68,7 +67,7 @@ public class ShoppingCartServices {
 		
 	}
 
-	public void removeProduct(Long cartId) {
+	public void removeProducts(Long cartId) {
 		List<CartColorSizeProduct> ccspList=cartColorSizeProductRepository.findByCartItem(cartItemRepository.getReferenceById(cartId));
 		for(CartColorSizeProduct ccsp:ccspList) {
 			cartColorSizeProductRepository.deleteById(ccsp.getId());
@@ -89,6 +88,11 @@ public class ShoppingCartServices {
 //	public void deleteAllCartItems(Long uid) {
 //		cartItemRepository.deleteAll(uid);
 //	}
+
+	public void removeSingleProduct(Long id) {
+		cartColorSizeProductRepository.deleteById(id);
+		
+	}
 	
 
 }

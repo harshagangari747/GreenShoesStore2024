@@ -1,6 +1,4 @@
 package com.store.greenShoes.controller;
-
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.store.greenShoes.DTO.AllProductsDTO;
 import com.store.greenShoes.DTO.ProductDTO;
 import com.store.greenShoes.model.Product;
 import com.store.greenShoes.service.ProductService;
 
-import jakarta.validation.Valid;
 
 @RestController
 public class ProductController {
@@ -30,11 +28,11 @@ public class ProductController {
 	ProductService productService;
 
 	@GetMapping("/product")
-	private ResponseEntity<List<ProductDTO>> getAllProducts(
+	private ResponseEntity<List<AllProductsDTO>> getAllProducts(
 			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = "100000") Integer size) {
 		try {
-			List<ProductDTO> productList = productService.getAllProducts(page, size);
+			List<AllProductsDTO> productList = productService.getAllProducts(page, size);
 			return ResponseEntity.ok(productList);
 
 		} catch (Exception e) {
@@ -75,12 +73,12 @@ public class ProductController {
 	private ProductDTO getProductById(@PathVariable("id") Long id) {
 		return productService.getProductById(id);
 	}
-//	
-//	@GetMapping("/productByCategory/{category}")
-//	private List<Product> getProductsByCategory(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
-//			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size, @PathVariable("category") String category){
-//		return productService.getProductsByCategory(page, size, category);
-//	}
+	
+	@GetMapping("/productByCategory/{category}")
+	private List<Product> getProductsByCategory(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
+			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size, @PathVariable("category") Long categoryId){
+		return productService.getProductsByCategory(page, size, categoryId);
+	}
 //	
 //	@GetMapping("/product/search")
 //	private List<Product> searchProduct(@RequestParam(name="q", required = true) String keyword){

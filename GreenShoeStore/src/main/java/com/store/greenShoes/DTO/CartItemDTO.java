@@ -3,6 +3,13 @@ package com.store.greenShoes.DTO;
 import java.util.Optional;
 
 public class CartItemDTO {
+	private Long cartProductSizeColorId;
+	public Long getCartProductSizeColorId() {
+		return cartProductSizeColorId;
+	}
+	public void setCartProductSizeColorId(Long cartProductSizeColorId) {
+		this.cartProductSizeColorId = cartProductSizeColorId;
+	}
 	private Optional<Long> cartId;
 	
 	public Optional<Long> getCartId() {

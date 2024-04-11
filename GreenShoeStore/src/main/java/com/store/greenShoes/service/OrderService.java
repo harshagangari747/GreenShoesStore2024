@@ -42,15 +42,17 @@ public class OrderService {
 	@Autowired
 	ProductRepository productRepository;
 	@Autowired
-	private SizeRepository sizeRepository;
+	SizeRepository sizeRepository;
 	@Autowired
-	private ColorRepository colorRepository;
+	ColorRepository colorRepository;
 	@Autowired
 	ShippingAddressRepository shippingAddressRepo;
 	@Autowired
 	BillingAddressRepository billingAddressRepo;
 	@Autowired
 	PaymentRepository paymentRepository;
+	@Autowired
+	ShoppingCartServices shoppingcart;
 
 	public OrderDTO postorder(OrderDTO orderData, Users customer) {
 		Orders order = new Orders();
@@ -89,6 +91,9 @@ public class OrderService {
 		order = ordersRepository.save(order);
 		// List<ProductSizeColorQuantityDTO>
 		// pscList=orderData.getProductSizeColorQuantityList();
+		orderData.setBillingAddress(billingAddress);
+		orderData.setPaymentInformation(paymentInformation);
+		orderData.setShippingAddress(shippingAddress);
 		List<ProductSizeColorDTO> pscList = orderData.getProductSizeColorList();
 		for (ProductSizeColorDTO psc : pscList) {
 			OrderDetails orderDetails = new OrderDetails();
@@ -103,8 +108,10 @@ public class OrderService {
 			psc1.setQuantity(psc1.getQuantity() - psc.getQuantity());
 			productSizeColorRepository.save(psc1);
 			orderDetails.setPrice(psc.getQuantity() * psc1.getProductId().getPrice());
+			//total+=orderDetails.getPrice();
 			orderDetailRepository.save(orderDetails);
 		}
+		shoppingcart.removeProducts(orderData.getCartId());
 		orderData.setOrderId(order.getOrderID());
 		return orderData;
 	}

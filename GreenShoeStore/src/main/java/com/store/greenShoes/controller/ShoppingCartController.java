@@ -66,6 +66,7 @@ public class ShoppingCartController {
 		
 		for(CartColorSizeProduct c:cartColorSizeProducts) {
 			CartItemDTO ctd=new CartItemDTO();
+			ctd.setCartProductSizeColorId(c.getId());
 			ctd.setCartId(Optional.of(c.getCartItem().getId()));
 			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
 			ctd.setProductId(c.getProductSizeColor().getProductId().getId());
@@ -122,9 +123,16 @@ public class ShoppingCartController {
 	
 	@Transactional
 	@DeleteMapping("/cart/remove/{cid}")
-	public void removeProductFromCart(@PathVariable("cid") Long cartId) {		
-		shoppingCartServices.removeProduct(cartId);
+	public void removeProductsFromCart(@PathVariable("cid") Long cartId) {		
+		shoppingCartServices.removeProducts(cartId);
 	}
+	
+	@Transactional
+	@DeleteMapping("/cart/{cartProductId}")
+	public void removeSingleProductFromCart(@PathVariable("cartProductId") Long id) {		
+		 shoppingCartServices.removeSingleProduct(id);
+	}
+	
 //	
 //
 //	
