@@ -1,6 +1,11 @@
 package com.store.greenShoes.service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +62,10 @@ public class OrderService {
 	public OrderDTO postorder(OrderDTO orderData, Users customer) {
 		Orders order = new Orders();
 		float total = 0;
-		order.setOrderDate(orderData.getOrderDate());
+		//DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+		LocalDate now = LocalDate.now();  
+//		Date myDate = new Date();
+		order.setOrderDate(now);
 		order.setTotalPrice(orderData.getTotal());
 		Users user = null;
 		if (customer != null) {
@@ -110,8 +118,8 @@ public class OrderService {
 			orderDetails.setPrice(psc.getQuantity() * psc1.getProductId().getPrice());
 			//total+=orderDetails.getPrice();
 			orderDetailRepository.save(orderDetails);
-		}
-		shoppingcart.removeProducts(orderData.getCartId());
+		}if(orderData.getCartId()!=null) {
+		shoppingcart.removeProducts(orderData.getCartId());}
 		orderData.setOrderId(order.getOrderID());
 		return orderData;
 	}

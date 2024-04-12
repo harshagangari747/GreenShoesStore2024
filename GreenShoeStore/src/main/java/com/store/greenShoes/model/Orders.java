@@ -1,6 +1,7 @@
 package com.store.greenShoes.model;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 public class Orders {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long orderID;
-	private Date orderDate;
+	private LocalDate orderDate;
 	private float totalPrice;
 //	@ManyToOne
 //	@JoinColumn(name="productSizeColor_Id")
@@ -55,11 +56,11 @@ public class Orders {
 	public void setOrderID(Long orderID) {
 		this.orderID = orderID;
 	}
-	public Date getOrderDate() {
+	public LocalDate getOrderDate() {
 		return orderDate;
 	}
-	public void setOrderDate(Date orderDate) {
-		this.orderDate = orderDate;
+	public void setOrderDate(LocalDate now) {
+		this.orderDate = now;
 	}
 	public float getTotalPrice() {
 		return totalPrice;

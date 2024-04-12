@@ -1,6 +1,7 @@
 package com.store.greenShoes.DTO;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.store.greenShoes.model.BillingAddress;
@@ -10,7 +11,7 @@ import com.store.greenShoes.model.ShippingAddress;
 
 public class OrderDTO {
 	private Long OrderId;
-	private Date orderDate;
+	private LocalDate orderDate;
 	private Long userId;
 	private Long cartId;
 	public Long getCartId() {
@@ -48,10 +49,11 @@ public class OrderDTO {
 	public void setOrderId(Long orderId) {
 		OrderId = orderId;
 	}
-	public Date getOrderDate() {
+	
+	public LocalDate getOrderDate() {
 		return orderDate;
 	}
-	public void setOrderDate(Date orderDate) {
+	public void setOrderDate(LocalDate orderDate) {
 		this.orderDate = orderDate;
 	}
 	public Long getUserId() {

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class
 		// Add ManagementWebSecurityAutoConfiguration.class if using Actuator security
 })
-@CrossOrigin(origins="http://localhost:4200",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
 public class GreenShoeStoreApplication {
 
 	public static void main(String[] args) {
