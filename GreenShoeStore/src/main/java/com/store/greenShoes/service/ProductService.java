@@ -103,7 +103,7 @@ public class ProductService {
 	public Product postProduct(ProductDTO productDTO, List<MultipartFile> productImages) {
 		Product product = productDTO.getProduct();
 		List<Image> images = productDTO.getImages();
-		List<SizeColorDTO> scd = productDTO.getSizeColorDTO();
+		Set<SizeColorDTO> scd = productDTO.getSizeColorDTO();
 		//ProductSizeColor psc = new ProductSizeColor();
 		Product insertedProduct = productRepository.save(product);
 		Long productId = insertedProduct.getId();
@@ -111,17 +111,17 @@ public class ProductService {
 		for (SizeColorDTO s : scd) {
 
 			Size s1 = s.getSize();
-			List<ColorQuantityDTO> colors = s.getColor();
+			Set<ColorQuantityDTO> colors = s.getColor();
 			for (ColorQuantityDTO c : colors) {
 				ProductSizeColor psc = new ProductSizeColor();
 				psc.setProductId(insertedProduct);
 				psc.setColorId(c.getColor());
 				psc.setQuantity(c.getQuantity());
 				psc.setSizeId(s1);
-				productSizeColorRepository.save(psc);
+				ProductSizeColor psc1=productSizeColorRepository.findByProductSizeColor(insertedProduct, s1, c.getColor());
+				if(psc1==null) {
+				productSizeColorRepository.save(psc);}
 			}
-
-			
 		}
 
 		images = new ArrayList<Image>();
@@ -157,7 +157,7 @@ public class ProductService {
 		productRepository.save(oldProduct);
 		// List<ProductSizeColor>
 		// pscList=productSizeColorRepository.findByProduct(oldProduct);
-		List<SizeColorDTO> scdList = productDTO.getSizeColorDTO();
+		Set<SizeColorDTO> scdList = productDTO.getSizeColorDTO();
 		List<Image> images = productDTO.getImages();
 		// ProductSizeColor psc=new ProductSizeColor();
 		for (SizeColorDTO s : scdList) {
@@ -165,7 +165,7 @@ public class ProductService {
 			Size s1 = s.getSize();
 			// List<ProductSizeColor>
 			// psc2=productSizeColorRepository.findByProductSize(oldProduct, s1);
-			List<ColorQuantityDTO> colors = s.getColor();
+			Set<ColorQuantityDTO> colors = s.getColor();
 			for (ColorQuantityDTO c : colors) {
 				ProductSizeColor psc2 = productSizeColorRepository.findByProductSizeColor(oldProduct, s1, c.getColor());
 				ProductSizeColor psc3;
@@ -204,13 +204,18 @@ public class ProductService {
 		Product product = productRepository.getReferenceById(id);
 		System.out.println(product.getDescription());
 		List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
-		List<SizeColorDTO> scdList = new ArrayList<>();
+		Set<SizeColorDTO> scdList = new HashSet<>();
+		Set<Float> sizes=new HashSet<>();
 		for (ProductSizeColor psc1 : psc) {
 			Size size = psc1.getSizeId();
 			SizeColorDTO scd = new SizeColorDTO();
 			System.out.println(scd);
+			if(sizes.contains(size.getSize())) {
+				System.out.println(size.getSize());
+				continue;
+			}
 			List<ProductSizeColor> psc2 = productSizeColorRepository.findByProductSize(product, size);
-			List<ColorQuantityDTO> cqdList = new ArrayList<>();
+			Set<ColorQuantityDTO> cqdList = new HashSet<>();
 			for (ProductSizeColor psc3 : psc2) {
 				ColorQuantityDTO cqd = new ColorQuantityDTO();
 				cqd.setColor(psc3.getColorId());
@@ -220,6 +225,7 @@ public class ProductService {
 			scd.setColor(cqdList);
 			scd.setSize(size);
 			scdList.add(scd);
+			sizes.add(size.getSize());
 
 		}
 		List<Image> images = imageRepository.getByProductId(id);

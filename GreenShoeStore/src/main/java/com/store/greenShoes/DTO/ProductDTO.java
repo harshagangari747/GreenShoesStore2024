@@ -2,6 +2,7 @@ package com.store.greenShoes.DTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
@@ -10,15 +11,17 @@ public class ProductDTO {
 	private Product product;
 	
 	
-	private List<SizeColorDTO> sizeColorDTO= new ArrayList<>();
+	private Set<SizeColorDTO> sizeColorDTO;
 
 	private List<Image> images;
 
-public List<SizeColorDTO> getSizeColorDTO() {
-	return sizeColorDTO;
-}
-public void setSizeColorDTO(List<SizeColorDTO> sizeColorDTO) {
-	this.sizeColorDTO = sizeColorDTO;
+
+public Set<SizeColorDTO> getSizeColorDTO() {
+		return sizeColorDTO;
+	}
+
+public void setSizeColorDTO(Set<SizeColorDTO> scdList) {
+	this.sizeColorDTO = scdList;
 }
 	
 	public List<Image> getImages() {
