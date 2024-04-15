@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 @Entity
 public class PaymentInformation {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,7 +19,7 @@ public class PaymentInformation {
 	private int expMonth;
 	//private Date expirationDate;
 	private int cvv;
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name ="billing_id")
 	private BillingAddress billingAddress;
 	public BillingAddress getBillingAddress() {
