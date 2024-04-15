@@ -1,11 +1,15 @@
 package com.store.greenShoes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.DTO.UserDTO;
@@ -17,11 +21,15 @@ import com.store.greenShoes.repository.BillingAddressRepository;
 import com.store.greenShoes.repository.PaymentRepository;
 import com.store.greenShoes.repository.ShippingAddressRepository;
 import com.store.greenShoes.repository.UsersRepository;
+import com.store.greenShoes.service.UserService;
 
 @RestController
+@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
 public class UserController {
 	@Autowired
 	UsersRepository userRepository;
+	@Autowired
+	UserService userService;
 	@Autowired
 	PaymentRepository paymentRepository;
 	@Autowired
@@ -31,15 +39,21 @@ public class UserController {
 	@PostMapping("/userRegistration")
 	private ResponseEntity<Object> postUser(@RequestBody UserDTO userDTO) {
 		Users user; 
-		String userName=userDTO.getUserName();
-		user=userRepository.getByUserName(userName);
+		String email=userDTO.getEmail();
+		user = userRepository.getByEmail(email);
 		if(!(user==null)) {
+			System.out.println(user.getEmail());
+			return ResponseEntity.badRequest().body("The email is already Present, Failed to Create new User");
+		}
+		String userName=userDTO.getUserName();
+		user = userRepository.getByUserName(userName);
+		if(user!=null) {
 			System.out.println(user.getUserName());
-			return ResponseEntity.badRequest().body("The user is already Present, Failed to Create new User");
+			return ResponseEntity.badRequest().body("The userName is already Present, Failed to Create new User");
 		}
 		else {
 		user=new Users();
-		user.setUserName(userName);
+		user.setUserName(userDTO.getUserName());
 		user.setPassword(userDTO.getPassword());
 		user.setEmail(userDTO.getEmail());
 		user.setFirstName(userDTO.getFirstName());
@@ -57,48 +71,64 @@ public class UserController {
 		userDTO.setLastName(user.getLastName());
 		userDTO.setMobile(user.getMobile());
 		userDTO.setUserName(user.getUserName());
+		userDTO.setBillingAddress(user.getBillingAddress());
+		userDTO.setPaymentInformation(user.getPaymentInformation());
+		userDTO.setShippingAddress(user.getShippingAddress());
+		userDTO.setUserId(user.getUserId());
+		userDTO.setPassword(user.getPassword());
 		return userDTO;
+	}
+	@GetMapping("/checkEmailExists/{email}")
+	private ResponseEntity<Object> checkEmailExists(@PathVariable("email") String email){
+		Users user = userRepository.getByEmail(email);
+		if(!(user==null)) {
+			System.out.println(user.getEmail());
+			return ResponseEntity.badRequest().body("The email is already Present, Failed to Create new User");
+		}
+		return   ResponseEntity.ok(HttpStatus.OK);
+		
 	}
 	
 	@PostMapping("/userShippingAddress/{uid}")
 	private ResponseEntity<Object> postShippingAddress(@RequestBody ShippingAddress address, @PathVariable("uid") Long uid){
-		ShippingAddress shippingAddress=shippingRepository.save(address);
-		Users user=userRepository.getReferenceById(uid);
-		user.setShippingAddress(shippingAddress);
-		userRepository.save(user);
-		return ResponseEntity.ok(shippingAddress);
+		return userService.postShippingAddress(address,uid);
 		
 	}
 	
 	@PostMapping("/userBillingAddress/{uid}")
 	private ResponseEntity<Object> postBillingAddress(@RequestBody BillingAddress address, @PathVariable("uid") Long uid){
-		BillingAddress billingAddress = billingAddressRepository.save(address);
-		Users user=userRepository.getReferenceById(uid);
-		PaymentInformation paymentInformation=user.getPaymentInformation();
-		if(paymentInformation!=null) {
-			paymentInformation=paymentRepository.getReferenceById(paymentInformation.getPaymentId());
-			paymentInformation.setBillingAddress(billingAddress);
-			paymentRepository.save(paymentInformation);
-		}
-		user.setBillingAddress(billingAddress);
-		userRepository.save(user);
-		return ResponseEntity.ok(billingAddress);
+		return userService.postBillingAddress(address,uid);
+		
 	}
 	
 	@PostMapping("/userPaymentInformation/{uid}")
 	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment,@PathVariable("uid") Long uid){
-		PaymentInformation paymentInformation = paymentRepository.save(payment);
-		Users user=userRepository.getReferenceById(uid);
-		BillingAddress billingAddress=user.getBillingAddress();
-		if(billingAddress!=null) {
-			paymentInformation=paymentRepository.getReferenceById(uid);
-			paymentInformation.setBillingAddress(billingAddress);
-			paymentInformation=paymentRepository.save(paymentInformation);
-		}
-		user.setPaymentInformation(paymentInformation);
-		userRepository.save(user);
-		return ResponseEntity.ok(paymentInformation);
+		return userService.postPayment(payment,uid);
 		
+		
+	}
+	@PutMapping("updateUserInformation/{uid}")
+	private UserDTO updateUserInformation( @RequestBody UserDTO userDTO,@PathVariable("uid") Long uid ) {
+		if(userDTO.getShippingAddress()!=null) {
+		userService.postShippingAddress(userDTO.getShippingAddress(),uid);}
+		if(userDTO.getBillingAddress()!=null) {
+		userService.postBillingAddress(userDTO.getBillingAddress(), uid);}
+		if(userDTO.getPaymentInformation()!=null) {
+		userService.postPayment(userDTO.getPaymentInformation(), uid);}
+		Users user=userRepository.getReferenceById(uid);
+		user.setPassword(userDTO.getPassword());
+		user.setFirstName(userDTO.getFirstName());
+		user.setLastName(userDTO.getLastName());
+		user.setMobile(userDTO.getMobile());
+		userRepository.save(user);
+		userDTO.setUserId(uid);
+//		user.setBillingAddress(user.getBillingAddress());
+//		user.setPaymentInformation(user.getPaymentInformation());
+//		user.setShippingAddress(user.getShippingAddress());
+		//user.setShippingAddress(userDTO.getShippingAddress());
+//		user.setBillingAddress(userDTO.getBillingAddress());
+//		user.setPaymentInformation(userDTO.getPaymentInformation());
+		return userDTO;
 	}
 	
 	@GetMapping("/userShippingAddress/{uid}")

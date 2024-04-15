@@ -1,5 +1,9 @@
 package com.store.greenShoes.DTO;
 
+import com.store.greenShoes.model.BillingAddress;
+import com.store.greenShoes.model.PaymentInformation;
+import com.store.greenShoes.model.ShippingAddress;
+
 public class UserDTO {
 	private Long userId;
 	private String userName;
@@ -9,6 +13,27 @@ public class UserDTO {
 	private String firstName;
 	private String lastName;
 	private String mobile;
+	private ShippingAddress shippingAddress;
+	private BillingAddress billingAddress;
+	private PaymentInformation paymentInformation;
+	public ShippingAddress getShippingAddress() {
+		return shippingAddress;
+	}
+	public void setShippingAddress(ShippingAddress shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+	public BillingAddress getBillingAddress() {
+		return billingAddress;
+	}
+	public void setBillingAddress(BillingAddress billingAddress) {
+		this.billingAddress = billingAddress;
+	}
+	public PaymentInformation getPaymentInformation() {
+		return paymentInformation;
+	}
+	public void setPaymentInformation(PaymentInformation paymentInformation) {
+		this.paymentInformation = paymentInformation;
+	}
 	public Long getUserId() {
 		return userId;
 	}

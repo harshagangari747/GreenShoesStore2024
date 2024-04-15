@@ -1,13 +1,16 @@
 package com.store.greenShoes.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.model.PaymentRequest;
 import com.store.greenShoes.model.PaymentResponse;
 
 @RestController
+@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
 public class PaymentController {
 
     @PostMapping("/simulatePayment")
