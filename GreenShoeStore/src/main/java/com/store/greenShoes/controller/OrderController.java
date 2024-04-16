@@ -38,13 +38,13 @@ public class OrderController {
 		return orderService.postorder(orderData, customer);
 	}
 
-	@GetMapping("/order/{uid}")
+	@GetMapping("/allOrdersOfAUser/{uid}")
 	public List<OrderDTO> getAllOrders(@PathVariable("uid") Long uid) {
 		return orderService.getAllOrders(uid);
 
 	}
 
-	@GetMapping("/order/{oid}")
+	@GetMapping("/singleOrderOfAUser/{oid}")
 	public ResponseEntity<OrderDTO> getOrder(@PathVariable("oid") Long oid) {
 		try {
 			OrderDTO getOrder = orderService.getOrder(oid);

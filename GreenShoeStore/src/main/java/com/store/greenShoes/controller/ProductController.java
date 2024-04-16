@@ -79,9 +79,9 @@ public class ProductController {
 		return productService.getProductById(id);
 	}
 	
-	@GetMapping("/productByCategory/{category}")
-	private List<Product> getProductsByCategory(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
-			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size, @PathVariable("category") Long categoryId){
+	@GetMapping("/productByCategory/{categoryId}")
+	private List<AllProductsDTO> getProductsByCategory(@RequestParam(name="page", required = false, defaultValue = "0") Integer page,
+			@RequestParam(name="size", required = false, defaultValue = "100000") Integer size, @PathVariable("categoryId") Long categoryId){
 		return productService.getProductsByCategory(page, size, categoryId);
 	}
 	
