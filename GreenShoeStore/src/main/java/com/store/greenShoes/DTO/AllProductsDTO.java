@@ -3,6 +3,8 @@ package com.store.greenShoes.DTO;
 
 import java.util.Set;
 
+import com.store.greenShoes.model.Image;
+
 public class AllProductsDTO {
 	private Long productId;
 	private String name;
@@ -10,6 +12,13 @@ public class AllProductsDTO {
 	private String Category;
 	private Set<String> color_names;
 	private Set<Float> sizes;
+	private Image image;
+	public Image getImage() {
+		return image;
+	}
+	public void setImage(Image image) {
+		this.image = image;
+	}
 	public Long getProductId() {
 		return productId;
 	}

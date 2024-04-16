@@ -71,6 +71,8 @@ public class ProductService {
 			}
 			prodDTO.setSizes(prodSizes);
 			prodDTO.setColor_names(prodColors);
+			Image image = imageRepository.getByProductId(product.getId()).get(0);
+			prodDTO.setImage(image);
 			allProductsDTO.add(prodDTO);
 			
 //			List<SizeColorDTO> scdList = new ArrayList<>();
@@ -232,6 +234,7 @@ public class ProductService {
 		prodDTO.setSizeColorDTO(scdList);
 		prodDTO.setProduct(product);
 		prodDTO.setImages(images);
+		prodDTO.setPrice(product.getPrice());
 //		List<Size> sizes= sizeRepository.getByProductId(id);
 //		List<Color> colors = colorRepository.getByProductId(id);
 
@@ -270,6 +273,8 @@ public class ProductService {
 			}
 			prodDTO.setSizes(prodSizes);
 			prodDTO.setColor_names(prodColors);
+			Image image = imageRepository.getByProductId(product.getId()).get(0);
+			prodDTO.setImage(image);
 			allProductsDTO.add(prodDTO);
 	}
 	

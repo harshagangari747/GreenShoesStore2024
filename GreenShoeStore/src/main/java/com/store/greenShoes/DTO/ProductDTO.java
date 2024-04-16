@@ -15,6 +15,14 @@ public class ProductDTO {
 
 	private List<Image> images;
 
+	private float price;
+public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
+	}
 
 public Set<SizeColorDTO> getSizeColorDTO() {
 		return sizeColorDTO;
