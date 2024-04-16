@@ -244,9 +244,36 @@ public class ProductService {
 		return prodDTO;
 	}
 //
-	public List<Product> getProductsByCategory(Integer page, Integer size, Long categoryId) {
-		PageRequest pageable = PageRequest.of(page, size);
-		return productRepository.findByCategory(categoryRepository.getReferenceById(categoryId), pageable);
+	public List<AllProductsDTO> getProductsByCategory(Integer page, Integer sizes, Long categoryId) {
+//		PageRequest pageable = PageRequest.of(page, size);
+//		return productRepository.findByCategory(categoryRepository.getReferenceById(categoryId), pageable);
+		PageRequest pageable = PageRequest.of(page, sizes);
+		List<AllProductsDTO> allProductsDTO = new ArrayList<>();
+
+		List<Product> products = productRepository.findByCategory(categoryRepository.getReferenceById(categoryId), pageable);
+		for (Product product : products) {
+			AllProductsDTO prodDTO = new AllProductsDTO();
+			System.out.println(product.getDescription());
+			prodDTO.setCategory(product.getCategory().getCategory());
+			prodDTO.setProductId(product.getId());
+			prodDTO.setPrice(product.getPrice());
+			prodDTO.setName(product.getName());
+			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
+			Set<Float> prodSizes=new HashSet<>();
+			Set<String> prodColors=new HashSet<>();
+			for (ProductSizeColor psc1 : psc) {
+				float size = psc1.getSizeId().getSize();
+				prodSizes.add(size);
+				String color=psc1.getColorId().getColor();
+				prodColors.add(color);
+				
+			}
+			prodDTO.setSizes(prodSizes);
+			prodDTO.setColor_names(prodColors);
+			allProductsDTO.add(prodDTO);
+	}
+	
+	return allProductsDTO;
 	}
 //
 //	public List<Product> searchProduct(String keyword) {	
