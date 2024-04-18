@@ -20,7 +20,13 @@ public class OrderDTO {
 	public void setCartId(Long cartId) {
 		this.cartId = cartId;
 	}
-	private List<ProductSizeColorDTO> productSizeColorList;
+	private List<ProductWithImageDTO> productWithImageDTO;
+	public List<ProductWithImageDTO> getProductWithImageDTO() {
+		return productWithImageDTO;
+	}
+	public void setProductWithImageDTO(List<ProductWithImageDTO> productWithImageDTO) {
+		this.productWithImageDTO = productWithImageDTO;
+	}
 	private float total;
 	private ShippingAddress shippingAddress;
 	private BillingAddress billingAddress;
@@ -65,12 +71,7 @@ public class OrderDTO {
 	
 	
 	
-	public List<ProductSizeColorDTO> getProductSizeColorList() {
-		return productSizeColorList;
-	}
-	public void setProductSizeColorList(List<ProductSizeColorDTO> productSizeColorList) {
-		this.productSizeColorList = productSizeColorList;
-	}
+	
 	public float getTotal() {
 		return total;
 	}
