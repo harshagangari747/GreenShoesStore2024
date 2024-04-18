@@ -84,7 +84,7 @@ public class ShoppingCartController {
 	public CartColorSizeProduct addProduct(@RequestBody CartItemDTO cartItemDTO) {
 		Product product=productRepository.getReferenceById(cartItemDTO.getProductId());
 		Users customer=null;
-		if(cartItemDTO.getUserId().isPresent()) {
+		if(cartItemDTO.getUserId()!=null) {
 			customer=userRepository.getReferenceByUserId(cartItemDTO.getUserId());
 		}
 		

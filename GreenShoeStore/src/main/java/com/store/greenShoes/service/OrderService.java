@@ -1,18 +1,14 @@
 package com.store.greenShoes.service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.store.greenShoes.DTO.OrderDTO;
-import com.store.greenShoes.DTO.ProductSizeColorDTO;
+import com.store.greenShoes.DTO.ProductWithImageDTO;
 import com.store.greenShoes.model.BillingAddress;
 import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.OrderDetails;
@@ -25,6 +21,7 @@ import com.store.greenShoes.model.Size;
 import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.BillingAddressRepository;
 import com.store.greenShoes.repository.ColorRepository;
+import com.store.greenShoes.repository.ImageRepository;
 import com.store.greenShoes.repository.OrderDetailsRepository;
 import com.store.greenShoes.repository.OrdersRepository;
 import com.store.greenShoes.repository.PaymentRepository;
@@ -33,6 +30,8 @@ import com.store.greenShoes.repository.ProductSizeColorRepository;
 import com.store.greenShoes.repository.ShippingAddressRepository;
 import com.store.greenShoes.repository.SizeRepository;
 import com.store.greenShoes.repository.UsersRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class OrderService {
@@ -58,6 +57,8 @@ public class OrderService {
 	PaymentRepository paymentRepository;
 	@Autowired
 	ShoppingCartServices shoppingcart;
+	@Autowired
+	ImageRepository imageRepository;
 
 	public OrderDTO postorder(OrderDTO orderData, Users customer) {
 		Orders order = new Orders();
@@ -102,8 +103,8 @@ public class OrderService {
 		orderData.setBillingAddress(billingAddress);
 		orderData.setPaymentInformation(paymentInformation);
 		orderData.setShippingAddress(shippingAddress);
-		List<ProductSizeColorDTO> pscList = orderData.getProductSizeColorList();
-		for (ProductSizeColorDTO psc : pscList) {
+		List<ProductWithImageDTO> pscList = orderData.getProductWithImageDTO();
+		for (ProductWithImageDTO psc : pscList) {
 			OrderDetails orderDetails = new OrderDetails();
 			orderDetails.setOrder(order);
 			Product product = productRepository.getReferenceById(psc.getProductId());
@@ -136,16 +137,18 @@ public class OrderService {
 			orderDTO.setShippingAddress(order.getShippingAddress());
 			orderDTO.setTotal(order.getTotalPrice());
 			List<OrderDetails> orderDetails = orderDetailRepository.findByOrder(order);
-			List<ProductSizeColorDTO> productSizeColorList = new ArrayList<>();
+			List<ProductWithImageDTO> productSizeColorList = new ArrayList<>();
 			for (OrderDetails orderDetail : orderDetails) {
-				ProductSizeColorDTO pscDTO = new ProductSizeColorDTO();
+				//ProductSizeColorDTO pscDTO = new ProductSizeColorDTO();
+				ProductWithImageDTO pscDTO=new ProductWithImageDTO();
 				pscDTO.setProductId(orderDetail.getProductSizeColor().getProductId().getId());
 				pscDTO.setColorId(orderDetail.getProductSizeColor().getColorId().getID());
 				pscDTO.setSizeId(orderDetail.getProductSizeColor().getSizeId().getID());
 				pscDTO.setQuantity(orderDetail.getQuantity());
+				pscDTO.setImage(imageRepository.getByProductId(orderDetail.getProductSizeColor().getProductId().getId()).get(0));
 				productSizeColorList.add(pscDTO);
 			}
-			orderDTO.setProductSizeColorList(productSizeColorList);
+			orderDTO.setProductWithImageDTO(productSizeColorList);
 			orderDTOList.add(orderDTO);
 		}
 
@@ -158,13 +161,14 @@ public class OrderService {
 			return null;
 		}
 		List<OrderDetails> singleOrderDetails = orderDetailRepository.findByOrder(singleOrder);
-		List<ProductSizeColorDTO> singleOrderPSC = new ArrayList<>();
+		List<ProductWithImageDTO> singleOrderPSC = new ArrayList<>();
 		for (OrderDetails o : singleOrderDetails) {
-			ProductSizeColorDTO pscDTO = new ProductSizeColorDTO();
+			ProductWithImageDTO pscDTO = new ProductWithImageDTO();
 			pscDTO.setProductId(o.getProductSizeColor().getProductId().getId());
 			pscDTO.setColorId(o.getProductSizeColor().getColorId().getID());
 			pscDTO.setSizeId(o.getProductSizeColor().getSizeId().getID());
 			pscDTO.setQuantity(o.getQuantity());
+			pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()).get(0));
 			singleOrderPSC.add(pscDTO);
 		}
 		OrderDTO singleOrderDTO = new OrderDTO();
@@ -172,11 +176,24 @@ public class OrderService {
 		singleOrderDTO.setOrderDate(singleOrder.getOrderDate());
 		singleOrderDTO.setPaymentInformation(singleOrder.getPayment());
 		singleOrderDTO.setShippingAddress(singleOrder.getShippingAddress());
-
-		singleOrderDTO.setProductSizeColorList(singleOrderPSC);
-
+		singleOrderDTO.setProductWithImageDTO(singleOrderPSC);
 		return singleOrderDTO;
-
+	}
+	@Transactional
+	public Object DeleteOrder(Long oid) {
+		Orders order=ordersRepository.getReferenceById(oid);
+		if(order!=null) {
+			List<OrderDetails> orders= orderDetailRepository.findByOrder(order);
+			for(OrderDetails singleOrder: orders) {
+				ProductSizeColor psc = productSizeColorRepository.getReferenceById(singleOrder.getProductSizeColor().getId());
+				psc.setQuantity(psc.getQuantity()+singleOrder.getQuantity());
+				productSizeColorRepository.save(psc);
+				
+			}
+		orderDetailRepository.deleteByOrder(order);
+		ordersRepository.deleteById(oid);
+		return ResponseEntity.ok("Cancelled Successfully");}
+		return ResponseEntity.badRequest().body("No Orders with this ID");
 	}
 
 }
