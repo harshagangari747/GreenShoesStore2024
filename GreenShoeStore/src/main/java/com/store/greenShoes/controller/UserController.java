@@ -1,5 +1,7 @@
 package com.store.greenShoes.controller;
 
+import com.store.greenShoes.Constants.Constants;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +23,13 @@ import com.store.greenShoes.repository.BillingAddressRepository;
 import com.store.greenShoes.repository.PaymentRepository;
 import com.store.greenShoes.repository.ShippingAddressRepository;
 import com.store.greenShoes.repository.UsersRepository;
+import com.store.greenShoes.service.MailService;
 import com.store.greenShoes.service.UserService;
+import com.store.greenShoes.service.UtilitiesService;
 
 @RestController
-@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = "http://localhost:3000", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT })
 public class UserController {
 	@Autowired
 	UsersRepository userRepository;
@@ -36,36 +41,40 @@ public class UserController {
 	ShippingAddressRepository shippingRepository;
 	@Autowired
 	BillingAddressRepository billingAddressRepository;
+
+	MailService mailService = MailService.GetMailServiceObject();
+
 	@PostMapping("/userRegistration")
 	private ResponseEntity<Object> postUser(@RequestBody UserDTO userDTO) {
-		Users user; 
-		String email=userDTO.getEmail();
+		Users user;
+		String email = userDTO.getEmail();
 		user = userRepository.getByEmail(email);
-		if(!(user==null)) {
+		if (!(user == null)) {
 			System.out.println(user.getEmail());
 			return ResponseEntity.badRequest().body("The email is already Present, Failed to Create new User");
 		}
-		String userName=userDTO.getUserName();
+		String userName = userDTO.getUserName();
 		user = userRepository.getByUserName(userName);
-		if(user!=null) {
+		if (user != null) {
 			System.out.println(user.getUserName());
 			return ResponseEntity.badRequest().body("The userName is already Present, Failed to Create new User");
+		} else {
+			user = new Users();
+			user.setUserName(userDTO.getUserName());
+			user.setPassword(UtilitiesService.hashPassword(userDTO.getPassword()));
+			user.setEmail(userDTO.getEmail());
+			user.setFirstName(userDTO.getFirstName());
+			user.setLastName(userDTO.getLastName());
+			user.setMobile(userDTO.getMobile());
+			user.setRole("User");
+			return ResponseEntity.ok(userRepository.save(user));
 		}
-		else {
-		user=new Users();
-		user.setUserName(userDTO.getUserName());
-		user.setPassword(userDTO.getPassword());
-		user.setEmail(userDTO.getEmail());
-		user.setFirstName(userDTO.getFirstName());
-		user.setLastName(userDTO.getLastName());
-		user.setMobile(userDTO.getMobile());
-		user.setRole("User");
-		return ResponseEntity.ok(userRepository.save(user));}
 	}
+
 	@GetMapping("/userRegistration/{uid}")
 	private UserDTO getUser(@PathVariable("uid") Long id) {
-		Users user=userRepository.getReferenceById(id);
-		UserDTO userDTO=new UserDTO();
+		Users user = userRepository.getReferenceById(id);
+		UserDTO userDTO = new UserDTO();
 		userDTO.setEmail(user.getEmail());
 		userDTO.setFirstName(user.getFirstName());
 		userDTO.setLastName(user.getLastName());
@@ -78,44 +87,50 @@ public class UserController {
 		userDTO.setPassword(user.getPassword());
 		return userDTO;
 	}
+
 	@GetMapping("/checkEmailExists/{email}")
-	private ResponseEntity<Object> checkEmailExists(@PathVariable("email") String email){
+	private ResponseEntity<Object> checkEmailExists(@PathVariable("email") String email) {
 		Users user = userRepository.getByEmail(email);
-		if(!(user==null)) {
+		if (!(user == null)) {
 			System.out.println(user.getEmail());
 			return ResponseEntity.badRequest().body("The email is already Present, Failed to Create new User");
 		}
-		return   ResponseEntity.ok(HttpStatus.OK);
-		
+		return ResponseEntity.ok(HttpStatus.OK);
+
 	}
-	
+
 	@PostMapping("/userShippingAddress/{uid}")
-	private ResponseEntity<Object> postShippingAddress(@RequestBody ShippingAddress address, @PathVariable("uid") Long uid){
-		return userService.postShippingAddress(address,uid);
-		
+	private ResponseEntity<Object> postShippingAddress(@RequestBody ShippingAddress address,
+			@PathVariable("uid") Long uid) {
+		return userService.postShippingAddress(address, uid);
+
 	}
-	
+
 	@PostMapping("/userBillingAddress/{uid}")
-	private ResponseEntity<Object> postBillingAddress(@RequestBody BillingAddress address, @PathVariable("uid") Long uid){
-		return userService.postBillingAddress(address,uid);
-		
+	private ResponseEntity<Object> postBillingAddress(@RequestBody BillingAddress address,
+			@PathVariable("uid") Long uid) {
+		return userService.postBillingAddress(address, uid);
+
 	}
-	
+
 	@PostMapping("/userPaymentInformation/{uid}")
-	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment,@PathVariable("uid") Long uid){
-		return userService.postPayment(payment,uid);
-		
-		
+	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment, @PathVariable("uid") Long uid) {
+		return userService.postPayment(payment, uid);
+
 	}
+
 	@PutMapping("updateUserInformation/{uid}")
-	private UserDTO updateUserInformation( @RequestBody UserDTO userDTO,@PathVariable("uid") Long uid ) {
-		if(userDTO.getShippingAddress()!=null) {
-		userService.postShippingAddress(userDTO.getShippingAddress(),uid);}
-		if(userDTO.getBillingAddress()!=null) {
-		userService.postBillingAddress(userDTO.getBillingAddress(), uid);}
-		if(userDTO.getPaymentInformation()!=null) {
-		userService.postPayment(userDTO.getPaymentInformation(), uid);}
-		Users user=userRepository.getReferenceById(uid);
+	private UserDTO updateUserInformation(@RequestBody UserDTO userDTO, @PathVariable("uid") Long uid) {
+		if (userDTO.getShippingAddress() != null) {
+			userService.postShippingAddress(userDTO.getShippingAddress(), uid);
+		}
+		if (userDTO.getBillingAddress() != null) {
+			userService.postBillingAddress(userDTO.getBillingAddress(), uid);
+		}
+		if (userDTO.getPaymentInformation() != null) {
+			userService.postPayment(userDTO.getPaymentInformation(), uid);
+		}
+		Users user = userRepository.getReferenceById(uid);
 		user.setPassword(userDTO.getPassword());
 		user.setFirstName(userDTO.getFirstName());
 		user.setLastName(userDTO.getLastName());
@@ -125,27 +140,55 @@ public class UserController {
 //		user.setBillingAddress(user.getBillingAddress());
 //		user.setPaymentInformation(user.getPaymentInformation());
 //		user.setShippingAddress(user.getShippingAddress());
-		//user.setShippingAddress(userDTO.getShippingAddress());
+		// user.setShippingAddress(userDTO.getShippingAddress());
 //		user.setBillingAddress(userDTO.getBillingAddress());
 //		user.setPaymentInformation(userDTO.getPaymentInformation());
 		return userDTO;
 	}
-	
+
 	@GetMapping("/userShippingAddress/{uid}")
-	private ShippingAddress getShippingAddress(@PathVariable("uid") Long id ) {
+	private ShippingAddress getShippingAddress(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		return shippingRepository.getReferenceById(user.getShippingAddress().getId());
 	}
+
 	@GetMapping("/userBillingAddress/{uid}")
-	private BillingAddress getBillingAddress(@PathVariable("uid") Long id ) {
+	private BillingAddress getBillingAddress(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		return billingAddressRepository.getReferenceById(user.getBillingAddress().getId());
 	}
+
 	@GetMapping("/userPaymentInformation/{uid}")
-	private PaymentInformation getPayment(@PathVariable("uid") Long id ) {
+	private PaymentInformation getPayment(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		return paymentRepository.getReferenceById(user.getPaymentInformation().getPaymentId());
 	}
-	
+
+	@PutMapping("/user/resetPassword")
+	private ResponseEntity<String> resetPassword(@RequestBody String email) {
+		try {
+			Users tempUser = userRepository.getByEmail(email);
+			if (tempUser == null) {
+				return ResponseEntity.badRequest().body(String.format(Constants.resetPasswordUserDoesntExist, email));
+			}
+			System.out.println("Old password" + tempUser.getPassword());
+			String tempPassword = UtilitiesService.GetRandomPassword();
+			String hashedPassword = UtilitiesService.hashPassword(tempPassword);
+			boolean isMailSent = mailService.sendMail(email, Constants.resetPasswordEmailSubject,
+					String.format(Constants.resetPasswordBodyTemplate, tempPassword));
+			if (isMailSent) {
+				Users existingUser = userRepository.getReferenceById(tempUser.getUserId());
+				existingUser.setPassword(hashedPassword);
+				System.err.println("new password" + existingUser.getPassword());
+				userRepository.save(existingUser);
+				return ResponseEntity.ok(Constants.resetPasswordEmailSentSuccessful);
+			} else {
+				return ResponseEntity.internalServerError().body(Constants.resetPasswordEmailDeliveryFailed);
+			}
+
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(String.format(Constants.resetPasswordError, e.getMessage()));
+		}
+	}
 
 }
