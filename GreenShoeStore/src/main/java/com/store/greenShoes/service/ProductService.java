@@ -318,6 +318,62 @@ public class ProductService {
 		return productDTO;
 	}
 
+	public List<AllProductsDTO> getAllLowStockProducts(Integer page, Integer sizes) {
+		PageRequest pageable = PageRequest.of(page, sizes);
+		List<AllProductsDTO> allProductsDTO = new ArrayList<>();
+
+		List<Product> products = productSizeColorRepository.getLowStock();
+		System.out.println(products.size());
+		for (Product product : products) {
+			AllProductsDTO prodDTO = new AllProductsDTO();
+			System.out.println(product.getDescription());
+			prodDTO.setCategory(product.getCategory().getCategory());
+			prodDTO.setProductId(product.getId());
+			prodDTO.setPrice(product.getPrice());
+			prodDTO.setName(product.getName());
+			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
+			Set<Float> prodSizes=new HashSet<>();
+			Set<String> prodColors=new HashSet<>();
+			for (ProductSizeColor psc1 : psc) {
+				float size = psc1.getSizeId().getSize();
+				prodSizes.add(size);
+				String color=psc1.getColorId().getColor();
+				prodColors.add(color);
+				
+			}
+			prodDTO.setSizes(prodSizes);
+			prodDTO.setColor_names(prodColors);
+			Image image = imageRepository.getByProductId(product.getId()).get(0);
+			prodDTO.setImage(image);
+			allProductsDTO.add(prodDTO);
+			
+//			List<SizeColorDTO> scdList = new ArrayList<>();
+//			for (ProductSizeColor psc1 : psc) {
+//				Size size = psc1.getSizeId();
+//				SizeColorDTO scd = new SizeColorDTO();
+//				System.out.println(scd);
+//				List<ProductSizeColor> psc2 = productSizeColorRepository.findByProductSize(product, size);
+//				List<ColorQuantityDTO> cqdList = new ArrayList<>();
+//				for (ProductSizeColor psc3 : psc2) {
+//					ColorQuantityDTO cqd = new ColorQuantityDTO();
+//					cqd.setColor(psc3.getColorId());
+//					cqd.setQuantity(psc3.getQuantity());
+//					cqdList.add(cqd);
+//				}
+//				scd.setColor(cqdList);
+//				scd.setSize(size);
+//				scdList.add(scd);
+//			}
+//			List<Image> images = imageRepository.getByProductId(product.getId());
+//			prodDTO.setSizeColorDTO(scdList);
+//			prodDTO.setProduct(product);
+//			prodDTO.setImages(images);
+//			DTO.add(prodDTO);
+		}
+		return allProductsDTO;
+	}
+	}
+
 
 //    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
 //        Optional<Product> fileData = productRepository.findByPicture(fileName);
@@ -326,4 +382,4 @@ public class ProductService {
 //        return images;
 //    }
 
-}
+

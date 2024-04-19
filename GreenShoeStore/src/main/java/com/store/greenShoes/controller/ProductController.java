@@ -90,6 +90,20 @@ public class ProductController {
 		
 		return productService.getProductBySizeColor(pid,sid,cid);
 	}
+	
+	@GetMapping("/productsWithLowStock")
+	private ResponseEntity<List<AllProductsDTO>> getAllLowStockProducts(
+			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+			@RequestParam(name = "size", required = false, defaultValue = "100000") Integer size) {
+		try {
+			List<AllProductsDTO> productList = productService.getAllLowStockProducts(page, size);
+			return ResponseEntity.ok(productList);
+
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(null);
+		}
+
+	}
 //	
 //	@GetMapping("/product/search")
 //	private List<Product> searchProduct(@RequestParam(name="q", required = true) String keyword){
