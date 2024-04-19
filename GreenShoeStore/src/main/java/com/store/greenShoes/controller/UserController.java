@@ -205,5 +205,39 @@ public class UserController {
 			return ResponseEntity.badRequest().body(String.format(Constants.resetPasswordError, e.getMessage()));
 		}
 	}
+	@PutMapping("/user/updateEmail/{uid}")
+	private ResponseEntity<Object>  updateEmail(@PathVariable("uid") Long uid, @RequestBody String email){
+		
+		try {
+			Users user = userRepository.getByEmail(email);
+			if (!(user == null) && user.getUserId()!=uid) {
+				System.out.println(user.getEmail());
+				return ResponseEntity.badRequest().body("The email is already Present, Failed to assign this email");
+			}
+			user = userRepository.getReferenceById(uid);
+			user.setEmail(email);
+			return ResponseEntity.ok().body(userRepository.save(user));
+		}
+		catch(Exception e){
+			return ResponseEntity.badRequest().body(String.format("Unable to change Email",e.getMessage()));
+		}
+	}
+	@PutMapping("/user/updateUserName/{uid}")
+	private ResponseEntity<Object>  updateUserName(@PathVariable("uid") Long uid, @RequestBody String userName){
+		
+		try {
+			Users user = userRepository.getByUserName(userName);
+			if (user != null && user.getUserId()!=uid) {
+				System.out.println(user.getUserName());
+				return ResponseEntity.badRequest().body("The userName is already Present, Failed to register this UserName");
+			}
+			 user = userRepository.getReferenceById(uid);
+			 user.setUserName(userName);
+			return ResponseEntity.ok().body(userRepository.save(user));
+		}
+		catch(Exception e){
+			return ResponseEntity.badRequest().body(String.format("Unable to change userName",e.getMessage()));
+		}
+	}
 
 }
