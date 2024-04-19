@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.store.greenShoes.DTO.OrderDTO;
 import com.store.greenShoes.DTO.ProductWithImageDTO;
+import com.store.greenShoes.DTO.ResponseOrderDTO;
+import com.store.greenShoes.DTO.ResponseProductWithImageDTO;
 import com.store.greenShoes.model.BillingAddress;
 import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.OrderDetails;
@@ -155,28 +157,30 @@ public class OrderService {
 		return orderDTOList;
 	}
 
-	public OrderDTO getOrder(Long oid) {
+	public ResponseOrderDTO getOrder(Long oid) {
 		Orders singleOrder = ordersRepository.getReferenceById(oid);
 		if (singleOrder == null) {
 			return null;
 		}
 		List<OrderDetails> singleOrderDetails = orderDetailRepository.findByOrder(singleOrder);
-		List<ProductWithImageDTO> singleOrderPSC = new ArrayList<>();
+		List<ResponseProductWithImageDTO> singleOrderPSC = new ArrayList<>();
 		for (OrderDetails o : singleOrderDetails) {
-			ProductWithImageDTO pscDTO = new ProductWithImageDTO();
+			ResponseProductWithImageDTO pscDTO = new ResponseProductWithImageDTO();
 			pscDTO.setProductId(o.getProductSizeColor().getProductId().getId());
-			pscDTO.setColorId(o.getProductSizeColor().getColorId().getID());
-			pscDTO.setSizeId(o.getProductSizeColor().getSizeId().getID());
+			pscDTO.setColor(o.getProductSizeColor().getColorId().getColor());
+			pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
 			pscDTO.setQuantity(o.getQuantity());
-			pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()).get(0));
+			pscDTO.setPrice(o.getPrice()/o.getQuantity());
+			pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()));
 			singleOrderPSC.add(pscDTO);
 		}
-		OrderDTO singleOrderDTO = new OrderDTO();
+		ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();
 		singleOrderDTO.setOrderId(singleOrder.getOrderID());
 		singleOrderDTO.setOrderDate(singleOrder.getOrderDate());
 		singleOrderDTO.setPaymentInformation(singleOrder.getPayment());
 		singleOrderDTO.setShippingAddress(singleOrder.getShippingAddress());
 		singleOrderDTO.setProductWithImageDTO(singleOrderPSC);
+		singleOrderDTO.setTotal(singleOrder.getTotalPrice());
 		return singleOrderDTO;
 	}
 	@Transactional
