@@ -17,7 +17,7 @@ import jakarta.mail.internet.MimeMessage;
 public class MailService {
 	private final String fromAddress = "greenshoeswebstore@gmail.com";
 	private final String username = "greenshoeswebstore@gmail.com";
-	private final String password = "jhrvnrzqjnwcbftt";
+	private final String password = "regszyzwfeswzbkb";
 	private final String host = "smtp.gmail.com";
 
 	private static Properties props;
