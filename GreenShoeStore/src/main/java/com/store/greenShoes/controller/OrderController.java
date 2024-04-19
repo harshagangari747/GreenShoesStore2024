@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.DTO.OrderDTO;
+import com.store.greenShoes.DTO.ResponseOrderDTO;
 import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.OrdersRepository;
 import com.store.greenShoes.repository.UsersRepository;
@@ -46,9 +47,9 @@ public class OrderController {
 	}
 
 	@GetMapping("/singleOrderOfAUser/{oid}")
-	public ResponseEntity<OrderDTO> getOrder(@PathVariable("oid") Long oid) {
+	public ResponseEntity<ResponseOrderDTO> getOrder(@PathVariable("oid") Long oid) {
 		try {
-			OrderDTO getOrder = orderService.getOrder(oid);
+			ResponseOrderDTO getOrder = orderService.getOrder(oid);
 			return ResponseEntity.ok(getOrder);
 		} catch (Exception ex) {
 			return ResponseEntity.badRequest().body(null);
