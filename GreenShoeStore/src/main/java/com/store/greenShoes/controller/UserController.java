@@ -67,7 +67,22 @@ public class UserController {
 			user.setLastName(userDTO.getLastName());
 			user.setMobile(userDTO.getMobile());
 			user.setRole("User");
-			return ResponseEntity.ok(userRepository.save(user));
+			try
+			{
+				Users u = userRepository.save(user);
+				if(u!=null)
+				{
+					mailService.sendMail(u.getEmail(), 
+							Constants.userAccountCreationSuccessfulEmailSubject, 
+							String.format(Constants.userAccountCreationSuccessfulEmailBody, u.getUserName()));
+					return ResponseEntity.ok(u);
+				}
+				return ResponseEntity.badRequest().body(null);
+			}
+			catch(Exception ex)
+			{
+				return ResponseEntity.badRequest().body(null);
+			}
 		}
 	}
 
