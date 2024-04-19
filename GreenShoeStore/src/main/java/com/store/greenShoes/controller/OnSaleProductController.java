@@ -1,13 +1,16 @@
 package com.store.greenShoes.controller;
 
 import java.util.List;
+import com.store.greenShoes.Constants.Constants;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,14 +19,16 @@ import com.store.greenShoes.repository.OnSaleProductRepository;
 import com.store.greenShoes.service.OnSaleProductService;
 
 @RestController
-@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = "http://localhost:3000", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT })
+@RequestMapping("/saleproduct")
 public class OnSaleProductController {
 	@Autowired
 	OnSaleProductRepository ospRepository;
 	@Autowired
 	OnSaleProductService ospService;
 
-	@GetMapping("/saleproduct/getOnSaleProducts")
+	@GetMapping("/getOnSaleProducts")
 	private ResponseEntity<List<OnSaleProducts>> getOnSaleProducts() {
 		try {
 			List<OnSaleProducts> currentOnsaleProducts = ospRepository.findAll();
@@ -33,13 +38,22 @@ public class OnSaleProductController {
 		}
 	}
 
-	@PostMapping("/saleproduct/postProductAsSale")
+	@PostMapping("/postProductAsSale")
 	private ResponseEntity<Object> postProductAsSale(@RequestBody OnSaleProducts saleProduct) {
 		try {
 			return ResponseEntity.ok(ospService.moveProductToSale(saleProduct));
 
 		} catch (Exception ex) {
-			return ResponseEntity.badRequest().body(new String("Cant mark product as on sale!"));
+			return ResponseEntity.badRequest().body(ex);
+		}
+	}
+
+	@DeleteMapping("/removeProductFromSale")
+	private ResponseEntity<Object> removeProductFromSale(@RequestBody Long id) {
+		try {
+			return ResponseEntity.ok(ospService.revertProductFromSale(id));
+		} catch (Exception ex) {
+			return ResponseEntity.badRequest().body(ex);
 		}
 	}
 
