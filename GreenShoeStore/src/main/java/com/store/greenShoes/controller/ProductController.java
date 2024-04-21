@@ -46,7 +46,7 @@ public class ProductController {
 
 	}
 
-	@PostMapping(value = "product", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/admin/product", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	private ResponseEntity<Object> postProduct(@RequestPart("image") List<MultipartFile> productImages,
 			@RequestPart("product") ProductDTO product) {
 		try {
@@ -63,7 +63,7 @@ public class ProductController {
 //		return productService.postManyProducts(products);
 //	}
 //	
-	@PutMapping("/product/{id}")
+	@PutMapping("/admin/product/{id}")
 	private ProductDTO updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO product) {
 		return productService.updateProduct(id, product);
 	}

@@ -44,7 +44,7 @@ public class WebSecurityConfigution {
         return http.csrf(csrf -> csrf.disable())
       //  		.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
         		.authorizeHttpRequests(auth -> auth.requestMatchers("/user/**").hasAuthority("User"))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/product/**").hasAuthority("Admin"))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/admin/**").hasAuthority("Admin"))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/generateToken","/**").permitAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
