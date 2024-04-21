@@ -14,4 +14,7 @@ public interface UsersRepository extends JpaRepository<Users, Long>{
 	Users getByEmail(String email);
 
 	Users getReferenceByUserId(Optional<Long> userId);
+	
+	@Query("select u from Users u where u.email=?1")
+	Optional<Users> findByEmail(String email);
 }

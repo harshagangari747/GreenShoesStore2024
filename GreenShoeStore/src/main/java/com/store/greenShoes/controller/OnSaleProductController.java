@@ -21,7 +21,7 @@ import com.store.greenShoes.service.OnSaleProductService;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
 		RequestMethod.PUT })
-@RequestMapping("/saleproduct")
+@RequestMapping("/product")
 public class OnSaleProductController {
 	@Autowired
 	OnSaleProductRepository ospRepository;

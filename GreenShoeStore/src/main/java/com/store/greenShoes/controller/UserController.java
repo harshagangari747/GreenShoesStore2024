@@ -5,6 +5,8 @@ import com.store.greenShoes.Constants.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.greenShoes.DTO.AdminDTO;
 import com.store.greenShoes.DTO.UserDTO;
+import com.store.greenShoes.configuration.AuthRequest;
 import com.store.greenShoes.model.BillingAddress;
 import com.store.greenShoes.model.PaymentInformation;
 import com.store.greenShoes.model.ShippingAddress;
@@ -23,14 +27,28 @@ import com.store.greenShoes.repository.BillingAddressRepository;
 import com.store.greenShoes.repository.PaymentRepository;
 import com.store.greenShoes.repository.ShippingAddressRepository;
 import com.store.greenShoes.repository.UsersRepository;
+import com.store.greenShoes.service.JwtService;
 import com.store.greenShoes.service.MailService;
+import com.store.greenShoes.service.UserInfoService;
 import com.store.greenShoes.service.UserService;
 import com.store.greenShoes.service.UtilitiesService;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
 		RequestMethod.PUT })
 public class UserController {
+	@Autowired
+    private UserInfoService service;
+	@Autowired
+	private PasswordEncoder encoder;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 	@Autowired
 	UsersRepository userRepository;
 	@Autowired
@@ -61,7 +79,8 @@ public class UserController {
 		} else {
 			user = new Users();
 			user.setUserName(userDTO.getUserName());
-			user.setPassword(UtilitiesService.hashPassword(userDTO.getPassword()));
+			//user.setPassword(UtilitiesService.hashPassword(userDTO.getPassword()));
+			user.setPassword(encoder.encode(userDTO.getPassword()));
 			user.setEmail(userDTO.getEmail());
 			user.setFirstName(userDTO.getFirstName());
 			user.setLastName(userDTO.getLastName());
@@ -86,7 +105,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/userRegistration/{uid}")
+	@GetMapping("/user/userRegistration/{uid}")
 	private UserDTO getUser(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		UserDTO userDTO = new UserDTO();
@@ -114,27 +133,27 @@ public class UserController {
 
 	}
 
-	@PostMapping("/userShippingAddress/{uid}")
+	@PostMapping("/user/userShippingAddress/{uid}")
 	private ResponseEntity<Object> postShippingAddress(@RequestBody ShippingAddress address,
 			@PathVariable("uid") Long uid) {
 		return userService.postShippingAddress(address, uid);
 
 	}
 
-	@PostMapping("/userBillingAddress/{uid}")
+	@PostMapping("/user/userBillingAddress/{uid}")
 	private ResponseEntity<Object> postBillingAddress(@RequestBody BillingAddress address,
 			@PathVariable("uid") Long uid) {
 		return userService.postBillingAddress(address, uid);
 
 	}
 
-	@PostMapping("/userPaymentInformation/{uid}")
+	@PostMapping("/user/userPaymentInformation/{uid}")
 	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment, @PathVariable("uid") Long uid) {
 		return userService.postPayment(payment, uid);
 
 	}
 
-	@PutMapping("updateUserInformation/{uid}")
+	@PutMapping("/user/updateUserInformation/{uid}")
 	private UserDTO updateUserInformation(@RequestBody UserDTO userDTO, @PathVariable("uid") Long uid) {
 		if (userDTO.getShippingAddress() != null) {
 			userService.postShippingAddress(userDTO.getShippingAddress(), uid);
@@ -161,25 +180,25 @@ public class UserController {
 		return userDTO;
 	}
 
-	@GetMapping("/userShippingAddress/{uid}")
+	@GetMapping("/user/userShippingAddress/{uid}")
 	private ShippingAddress getShippingAddress(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		return shippingRepository.getReferenceById(user.getShippingAddress().getId());
 	}
 
-	@GetMapping("/userBillingAddress/{uid}")
+	@GetMapping("/user/userBillingAddress/{uid}")
 	private BillingAddress getBillingAddress(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		return billingAddressRepository.getReferenceById(user.getBillingAddress().getId());
 	}
 
-	@GetMapping("/userPaymentInformation/{uid}")
+	@GetMapping("/user/userPaymentInformation/{uid}")
 	private PaymentInformation getPayment(@PathVariable("uid") Long id) {
 		Users user = userRepository.getReferenceById(id);
 		return paymentRepository.getReferenceById(user.getPaymentInformation().getPaymentId());
 	}
 
-	@PutMapping("/user/resetPassword")
+	@PutMapping("/resetPassword")
 	private ResponseEntity<String> resetPassword(@RequestBody String email) {
 		try {
 			Users tempUser = userRepository.getByEmail(email);
@@ -188,7 +207,7 @@ public class UserController {
 			}
 			System.out.println("Old password" + tempUser.getPassword());
 			String tempPassword = UtilitiesService.GetRandomPassword();
-			String hashedPassword = UtilitiesService.hashPassword(tempPassword);
+			String hashedPassword = encoder.encode(tempPassword);
 			boolean isMailSent = mailService.sendMail(email, Constants.resetPasswordEmailSubject,
 					String.format(Constants.resetPasswordBodyTemplate, tempPassword));
 			if (isMailSent) {
@@ -239,5 +258,62 @@ public class UserController {
 			return ResponseEntity.badRequest().body(String.format("Unable to change userName",e.getMessage()));
 		}
 	}
+	
+	
+	@PostMapping("/generateToken")
+    private String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+		//return ResponseEntity.ok("Token generation test successful");
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        //return "generated";
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(authRequest.getUsername());
+        } else {
+            throw new UsernameNotFoundException("invalid user request !");
+        }
+    }
+	
+	@PostMapping("/adminRegistration")
+	private ResponseEntity<Object> postAdmin(@RequestBody AdminDTO userDTO) {
+		Users user;
+		String email = userDTO.getEmail();
+		user = userRepository.getByEmail(email);
+		if (!(user == null)) {
+			System.out.println(user.getEmail());
+			return ResponseEntity.badRequest().body("The email is already Present, Failed to Create new Admin");
+		}
+		String userName = userDTO.getUserName();
+		user = userRepository.getByUserName(userName);
+		if (user != null) {
+			System.out.println(user.getUserName());
+			return ResponseEntity.badRequest().body("The userName is already Present, Failed to Create new Admin");
+		} else {
+			user = new Users();
+			user.setUserName(userDTO.getUserName());
+			//user.setPassword(UtilitiesService.hashPassword(userDTO.getPassword()));
+			user.setPassword(encoder.encode(userDTO.getPassword()));
+			user.setEmail(userDTO.getEmail());
+			user.setFirstName(userDTO.getFirstName());
+			user.setLastName(userDTO.getLastName());
+		//	user.setMobile(userDTO.getMobile());
+			user.setRole("Admin");
+			try
+			{
+				Users u = userRepository.save(user);
+				if(u!=null)
+				{
+					mailService.sendMail(u.getEmail(), 
+							Constants.userAccountCreationSuccessfulEmailSubject, 
+							String.format(Constants.userAccountCreationSuccessfulEmailBody, u.getUserName()));
+					return ResponseEntity.ok(u);
+				}
+				return ResponseEntity.badRequest().body(null);
+			}
+			catch(Exception ex)
+			{
+				return ResponseEntity.badRequest().body(null);
+			}
+		}
+	}
+
 
 }

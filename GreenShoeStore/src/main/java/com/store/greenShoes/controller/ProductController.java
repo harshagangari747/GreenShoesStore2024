@@ -46,7 +46,7 @@ public class ProductController {
 
 	}
 
-	@PostMapping(value = "product", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/admin/product", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	private ResponseEntity<Object> postProduct(@RequestPart("image") List<MultipartFile> productImages,
 			@RequestPart("product") ProductDTO product) {
 		try {
@@ -63,7 +63,7 @@ public class ProductController {
 //		return productService.postManyProducts(products);
 //	}
 //	
-	@PutMapping("/product/{id}")
+	@PutMapping("/admin/product/{id}")
 	private ProductDTO updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO product) {
 		return productService.updateProduct(id, product);
 	}
@@ -85,13 +85,13 @@ public class ProductController {
 		return productService.getProductsByCategory(page, size, categoryId);
 	}
 	
-	@GetMapping("/productBySizeColor/{pid}/{sid}/{cid}")
+	@GetMapping("/product/productBySizeColor/{pid}/{sid}/{cid}")
 	private ProductCartDTO getProductBySizeColor(@PathVariable("pid")Long pid,@PathVariable("sid")Long sid, @PathVariable("cid")Long cid) {
 		
 		return productService.getProductBySizeColor(pid,sid,cid);
 	}
 	
-	@GetMapping("/productsWithLowStock")
+	@GetMapping("/product/productsWithLowStock")
 	private ResponseEntity<List<AllProductsDTO>> getAllLowStockProducts(
 			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = "100000") Integer size) {
