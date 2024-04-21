@@ -30,7 +30,7 @@ public class OrderController {
 	@Autowired
 	UsersRepository userRepo;
 
-	@PostMapping("/order")
+	@PostMapping("order")
 	public OrderDTO postOrder(@RequestBody OrderDTO orderData) {
 		System.out.println("con" + orderData);
 		Users customer = null;
@@ -40,13 +40,13 @@ public class OrderController {
 		return orderService.postorder(orderData, customer);
 	}
 
-	@GetMapping("/allOrdersOfAUser/{uid}")
+	@GetMapping("/user/allOrdersOfAUser/{uid}")
 	public List<OrderDTO> getAllOrders(@PathVariable("uid") Long uid) {
 		return orderService.getAllOrders(uid);
 
 	}
 
-	@GetMapping("/singleOrderOfAUser/{oid}")
+	@GetMapping("/user/singleOrderOfAUser/{oid}")
 	public ResponseEntity<ResponseOrderDTO> getOrder(@PathVariable("oid") Long oid) {
 		try {
 			ResponseOrderDTO getOrder = orderService.getOrder(oid);

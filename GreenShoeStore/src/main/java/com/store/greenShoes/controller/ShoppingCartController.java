@@ -58,7 +58,7 @@ public class ShoppingCartController {
 	private CartColorSizeProductRepository cartColorSizeProductRepository; 
 
 	
-	@GetMapping("/cart/{uid}")
+	@GetMapping("/user/cart/{uid}")
 	public List<CartItemDTO> showShoppingCart(@PathVariable("uid") Long customerId) {
 		Users customer=userRepository.getReferenceById(customerId);
 		CartItem cartItem = cartItemRepository.findByUser(customer);
@@ -80,7 +80,7 @@ public class ShoppingCartController {
 		return cartItemDTO;
 	}
 	
-	@PostMapping("/cart")
+	@PostMapping("/user/cart")
 	public CartColorSizeProduct addProduct(@RequestBody CartItemDTO cartItemDTO) {
 		Product product=productRepository.getReferenceById(cartItemDTO.getProductId());
 		Users customer=null;
@@ -117,20 +117,20 @@ public class ShoppingCartController {
 		
 	
 	
-	@PutMapping("/cart")
+	@PutMapping("/user/cart")
 	public CartItemDTO addquantity(@RequestBody CartItemDTO cartItemDTO) {
 		return shoppingCartServices.putQuantity(cartItemDTO);
 	}
 	
 	
 	@Transactional
-	@DeleteMapping("/cart/remove/{cid}")
+	@DeleteMapping("/user/cart/remove/{cid}")
 	public void removeProductsFromCart(@PathVariable("cid") Long cartId) {		
 		shoppingCartServices.removeProducts(cartId);
 	}
 	
 	@Transactional
-	@DeleteMapping("/cart/{cartProductId}")
+	@DeleteMapping("/user/cart/{cartProductId}")
 	public void removeSingleProductFromCart(@PathVariable("cartProductId") Long id) {		
 		 shoppingCartServices.removeSingleProduct(id);
 	}

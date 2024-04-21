@@ -13,7 +13,7 @@ import com.store.greenShoes.model.PaymentResponse;
 @CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
 public class PaymentController {
 
-    @PostMapping("/simulatePayment")
+    @PostMapping("/user/simulatePayment")
     public PaymentResponse simulatePayment(@RequestBody PaymentRequest paymentRequest) {
         // Simulate payment logic. In a real scenario, this would interact with a payment gateway.
         System.out.println("Processing payment for amount: " + paymentRequest.getAmount());

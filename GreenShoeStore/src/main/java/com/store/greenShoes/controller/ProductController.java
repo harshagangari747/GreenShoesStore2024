@@ -85,13 +85,13 @@ public class ProductController {
 		return productService.getProductsByCategory(page, size, categoryId);
 	}
 	
-	@GetMapping("/productBySizeColor/{pid}/{sid}/{cid}")
+	@GetMapping("/product/productBySizeColor/{pid}/{sid}/{cid}")
 	private ProductCartDTO getProductBySizeColor(@PathVariable("pid")Long pid,@PathVariable("sid")Long sid, @PathVariable("cid")Long cid) {
 		
 		return productService.getProductBySizeColor(pid,sid,cid);
 	}
 	
-	@GetMapping("/productsWithLowStock")
+	@GetMapping("/product/productsWithLowStock")
 	private ResponseEntity<List<AllProductsDTO>> getAllLowStockProducts(
 			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = "100000") Integer size) {
