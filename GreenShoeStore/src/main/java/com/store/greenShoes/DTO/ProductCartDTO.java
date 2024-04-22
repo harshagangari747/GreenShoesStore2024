@@ -1,5 +1,9 @@
 package com.store.greenShoes.DTO;
 
+import java.util.List;
+
+import com.store.greenShoes.model.Image;
+
 public class ProductCartDTO {
 	private Long productId;
 	private Long colorId;
@@ -9,6 +13,13 @@ public class ProductCartDTO {
 	private Long quantity;
 	private float price;
 	private float size;
+	private List<Image> images;
+	public List<Image> getImages() {
+		return images;
+	}
+	public void setImages(List<Image> images) {
+		this.images = images;
+	}
 	public float getSize() {
 		return size;
 	}

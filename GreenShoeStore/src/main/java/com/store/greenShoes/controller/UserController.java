@@ -2,6 +2,9 @@ package com.store.greenShoes.controller;
 
 import com.store.greenShoes.Constants.Constants;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.DTO.AdminDTO;
+import com.store.greenShoes.DTO.AfterLoginDTO;
 import com.store.greenShoes.DTO.UserDTO;
 import com.store.greenShoes.configuration.AuthRequest;
 import com.store.greenShoes.model.BillingAddress;
@@ -242,31 +246,39 @@ public class UserController {
 		}
 	}
 	@PutMapping("/user/updateUserName/{uid}")
-	private ResponseEntity<Object>  updateUserName(@PathVariable("uid") Long uid, @RequestBody String userName){
+	private ResponseEntity<Object>  updateUserName(@PathVariable("uid") Long uid, @RequestBody Map<String,String> names){
 		
 		try {
-			Users user = userRepository.getByUserName(userName);
-			if (user != null && user.getUserId()!=uid) {
-				System.out.println(user.getUserName());
-				return ResponseEntity.badRequest().body("The userName is already Present, Failed to register this UserName");
-			}
-			 user = userRepository.getReferenceById(uid);
-			 user.setUserName(userName);
+			Users user = userRepository.getReferenceById(uid);
+//			if (user != null && user.getUserId()!=uid) {
+//				System.out.println(user.getUserName());
+//				return ResponseEntity.badRequest().body("The userName is already Present, Failed to register this UserName");
+//			}
+			// user = userRepository.getReferenceById(uid);
+			
+			 user.setFirstName(names.get("firstName"));
+			 user.setLastName(names.get("lastName"));
 			return ResponseEntity.ok().body(userRepository.save(user));
 		}
 		catch(Exception e){
 			return ResponseEntity.badRequest().body(String.format("Unable to change userName",e.getMessage()));
 		}
+		
 	}
 	
 	
+	
 	@PostMapping("/generateToken")
-    private String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    private Object authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
 		//return ResponseEntity.ok("Token generation test successful");
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         //return "generated";
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
+        	AfterLoginDTO afterLoginDTO=new AfterLoginDTO();
+            afterLoginDTO.setToken( jwtService.generateToken(authRequest.getUsername()));
+            afterLoginDTO.setEmail(authRequest.getUsername());
+            afterLoginDTO.setUserId(userRepository.getByEmail(authRequest.getUsername()).getUserId());
+            return afterLoginDTO;
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }

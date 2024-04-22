@@ -1,6 +1,9 @@
 package com.store.greenShoes.DTO;
 
+import java.util.List;
 import java.util.Optional;
+
+import com.store.greenShoes.model.Image;
 
 public class CartItemDTO {
 	private Long cartProductSizeColorId;
@@ -23,6 +26,48 @@ public class CartItemDTO {
 	private Long quantity;
 	private Long colorId;
 	private Long sizeId;
+	private String colorName;
+	private String productName;
+	private float size;
+	private Long stockAvailable;
+	private List<Image> images;
+	private float price;
+	public float getPrice() {
+		return price;
+	}
+	public void setPrice(float price) {
+		this.price = price;
+	}
+	public List<Image> getImages() {
+		return images;
+	}
+	public void setImages(List<Image> images) {
+		this.images = images;
+	}
+	public String getColorName() {
+		return colorName;
+	}
+	public void setColorName(String colorName) {
+		this.colorName = colorName;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public float getSize() {
+		return size;
+	}
+	public void setSize(float size) {
+		this.size = size;
+	}
+	public Long getStockAvailable() {
+		return stockAvailable;
+	}
+	public void setStockAvailable(Long stockAvailable) {
+		this.stockAvailable = stockAvailable;
+	}
 	public Long getProductId() {
 		return productId;
 	}
