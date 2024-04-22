@@ -26,6 +26,7 @@ import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.CartColorSizeProductRepository;
 import com.store.greenShoes.repository.CartItemRepository;
 import com.store.greenShoes.repository.ColorRepository;
+import com.store.greenShoes.repository.ImageRepository;
 import com.store.greenShoes.repository.ProductRepository;
 import com.store.greenShoes.repository.ProductSizeColorRepository;
 import com.store.greenShoes.repository.SizeRepository;
@@ -56,6 +57,8 @@ public class ShoppingCartController {
 	private ProductSizeColorRepository productSizeColorRepository;
 	@Autowired
 	private CartColorSizeProductRepository cartColorSizeProductRepository; 
+	@Autowired
+	private ImageRepository imageRepository;
 
 	
 	@GetMapping("/user/cart/{uid}")
@@ -68,6 +71,7 @@ public class ShoppingCartController {
 		
 		for(CartColorSizeProduct c:cartColorSizeProducts) {
 			CartItemDTO ctd=new CartItemDTO();
+			//ProductSizeColor psc=productSizeColorRepository.findByProductSizeColor(null, null, null)
 			ctd.setCartProductSizeColorId(c.getId());
 			ctd.setCartId(Optional.of(c.getCartItem().getId()));
 			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
@@ -75,6 +79,11 @@ public class ShoppingCartController {
 			ctd.setQuantity(c.getQuantity());
 			ctd.setSizeId(c.getProductSizeColor().getSizeId().getID());
 			ctd.setUserId(Optional.of(c.getCartItem().getUser().getUserId()));
+			ctd.setColorName(c.getProductSizeColor().getColorId().getColor());
+			ctd.setSize(c.getProductSizeColor().getSizeId().getSize());
+			ctd.setStockAvailable(c.getProductSizeColor().getQuantity());
+			ctd.setImages(imageRepository.getByProductId(c.getProductSizeColor().getProductId().getId()));
+			ctd.setPrice(c.getProductSizeColor().getProductId().getPrice());
 			cartItemDTO.add(ctd);
 		}
 		return cartItemDTO;

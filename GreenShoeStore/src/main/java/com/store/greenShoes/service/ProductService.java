@@ -315,6 +315,7 @@ public class ProductService {
 		productDTO.setPrice(product.getPrice());
 		productDTO.setQuantity(psc.getQuantity());
 		productDTO.setProductName(product.getName());
+		productDTO.setImages(imageRepository.getByProductId(pid));
 		return productDTO;
 	}
 
