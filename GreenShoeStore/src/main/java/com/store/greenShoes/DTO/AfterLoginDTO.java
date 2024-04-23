@@ -4,6 +4,13 @@ public class AfterLoginDTO {
 	private Long userId;
 	private String email;
 	private String token;
+	private String firstName;
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 	public Long getUserId() {
 		return userId;
 	}
