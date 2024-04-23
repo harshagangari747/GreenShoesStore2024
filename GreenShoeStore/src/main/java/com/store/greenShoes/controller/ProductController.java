@@ -91,7 +91,7 @@ public class ProductController {
 		return productService.getProductBySizeColor(pid,sid,cid);
 	}
 	
-	@GetMapping("/product/productsWithLowStock")
+	@GetMapping("admin/product/productsWithLowStock")
 	private ResponseEntity<List<AllProductsDTO>> getAllLowStockProducts(
 			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = "100000") Integer size) {

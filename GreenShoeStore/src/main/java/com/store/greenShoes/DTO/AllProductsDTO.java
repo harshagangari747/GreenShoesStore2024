@@ -13,6 +13,13 @@ public class AllProductsDTO {
 	private Set<String> color_names;
 	private Set<Float> sizes;
 	private Image image;
+	private Long stockAvailable;
+	public Long getStockAvailable() {
+		return stockAvailable;
+	}
+	public void setStockAvailable(Long stockAvailable) {
+		this.stockAvailable = stockAvailable;
+	}
 	public Image getImage() {
 		return image;
 	}

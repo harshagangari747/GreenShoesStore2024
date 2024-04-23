@@ -23,12 +23,16 @@ public interface ProductSizeColorRepository extends JpaRepository<ProductSizeCol
 	ProductSizeColor findByProductSizeColor(Product product, Size size, Color color);
 	
 	
-	@Query("SELECT psc.productId FROM ProductSizeColor psc JOIN (SELECT SUM(psc2.Quantity) AS totalQuantity, psc2.productId as productsId FROM ProductSizeColor psc2 GROUP BY psc2.productId) p ON psc.productId = p.productsId WHERE p.totalQuantity < 10 GROUP BY psc.productId")
+	@Query("SELECT psc.productId FROM ProductSizeColor psc JOIN (SELECT SUM(psc2.Quantity) AS totalQuantity, psc2.productId as productsId FROM ProductSizeColor psc2 GROUP BY psc2.productId) p ON psc.productId = p.productsId WHERE p.totalQuantity <= 10 GROUP BY psc.productId")
 	
 
 	
 	//@Query("select psc.productId from ProductSizeColor psc Join (select sum(quantity) as quantity,productId from ProductSizeColor group by productId) p on psc.productId=p.product_id where p.quantity<400 group by psc.productId")
 	List<Product> getLowStock();
+	
+	
+	@Query("SELECT SUM(psc2.Quantity) AS totalQuantity FROM ProductSizeColor psc2 where psc2.productId=?1 GROUP BY psc2.productId")
+	Long getAvailableStock(Product product);
 
 	//List<ProductSizeColor> findByProductSize(Long id, Long id2);
 	

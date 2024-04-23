@@ -332,6 +332,8 @@ public class ProductService {
 			prodDTO.setProductId(product.getId());
 			prodDTO.setPrice(product.getPrice());
 			prodDTO.setName(product.getName());
+			Long stockAvailable= productSizeColorRepository.getAvailableStock(product);
+			prodDTO.setStockAvailable(stockAvailable);
 			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
 			Set<Float> prodSizes=new HashSet<>();
 			Set<String> prodColors=new HashSet<>();

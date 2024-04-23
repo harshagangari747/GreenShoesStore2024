@@ -151,7 +151,7 @@ public class UserController {
 
 	}
 
-	@PostMapping("/user/userPaymentInformation/{uid}")
+	@PostMapping("user/userPaymentInformation/{uid}")
 	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment, @PathVariable("uid") Long uid) {
 		return userService.postPayment(payment, uid);
 
