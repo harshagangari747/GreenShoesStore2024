@@ -97,7 +97,7 @@ public class UserController {
 				{
 					mailService.sendMail(u.getEmail(), 
 							Constants.userAccountCreationSuccessfulEmailSubject, 
-							String.format(Constants.userAccountCreationSuccessfulEmailBody, u.getUserName()));
+							String.format(Constants.userAccountCreationSuccessfulEmailBody, u.getFirstName()));
 					return ResponseEntity.ok(u);
 				}
 				return ResponseEntity.badRequest().body(null);
@@ -277,7 +277,9 @@ public class UserController {
         	AfterLoginDTO afterLoginDTO=new AfterLoginDTO();
             afterLoginDTO.setToken( jwtService.generateToken(authRequest.getUsername()));
             afterLoginDTO.setEmail(authRequest.getUsername());
-            afterLoginDTO.setUserId(userRepository.getByEmail(authRequest.getUsername()).getUserId());
+            Users user = userRepository.getByEmail(authRequest.getUsername());
+            afterLoginDTO.setUserId(user.getUserId());
+            afterLoginDTO.setFirstName(user.getFirstName());
             return afterLoginDTO;
         } else {
             throw new UsernameNotFoundException("invalid user request !");
