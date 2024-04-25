@@ -1,19 +1,13 @@
 package com.store.greenShoes.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -39,6 +33,7 @@ public class Product {
 	private Category category;
 	
 	private String description;
+	private boolean isAvailable;
 	
 //	@OneToMany(mappedBy = "productId",cascade = CascadeType.ALL, orphanRemoval = true)
 //	private List<Size> sizes= new ArrayList<>();
@@ -53,6 +48,14 @@ public class Product {
 //        size.setProductId(null);
 //    }
 
+
+	public boolean isAvailable() {
+		return isAvailable;
+	}
+
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
 
 	public Product() {
 		super();
