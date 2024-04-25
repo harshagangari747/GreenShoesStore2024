@@ -51,7 +51,7 @@ public class ProductService {
 		PageRequest pageable = PageRequest.of(page, sizes);
 		List<AllProductsDTO> allProductsDTO = new ArrayList<>();
 
-		List<Product> products = productRepository.findAll();
+		List<Product> products = productRepository.findAllAvailableProducts();
 		for (Product product : products) {
 			AllProductsDTO prodDTO = new AllProductsDTO();
 			System.out.println(product.getDescription());
@@ -106,6 +106,7 @@ public class ProductService {
 		Product product = productDTO.getProduct();
 		List<Image> images = productDTO.getImages();
 		Set<SizeColorDTO> scd = productDTO.getSizeColorDTO();
+		product.setAvailable(true);
 		//ProductSizeColor psc = new ProductSizeColor();
 		Product insertedProduct = productRepository.save(product);
 		Long productId = insertedProduct.getId();
@@ -375,9 +376,20 @@ public class ProductService {
 		}
 		return allProductsDTO;
 	}
+
+	public void deleteProduct(Long pid) throws Exception {
+		try{
+		Product product= productRepository.getReferenceById(pid);
+		product.setAvailable(false);
+		productRepository.save(product);
+		
+	}
+		catch(Exception ex) {
+			throw new Exception();
+		}
 	}
 
-
+}
 //    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
 //        Optional<Product> fileData = productRepository.findByPicture(fileName);
 //        String filePath=fileData.get().getPicture();

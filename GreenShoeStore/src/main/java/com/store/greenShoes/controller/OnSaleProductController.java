@@ -2,6 +2,7 @@ package com.store.greenShoes.controller;
 
 import java.util.List;
 import com.store.greenShoes.Constants.Constants;
+import com.store.greenShoes.DTO.OnSaleDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.model.OnSaleProducts;
+import com.store.greenShoes.repository.ImageRepository;
 import com.store.greenShoes.repository.OnSaleProductRepository;
+import com.store.greenShoes.repository.ProductRepository;
 import com.store.greenShoes.service.OnSaleProductService;
 
 @RestController
@@ -27,18 +30,28 @@ public class OnSaleProductController {
 	OnSaleProductRepository ospRepository;
 	@Autowired
 	OnSaleProductService ospService;
+	@Autowired
+	ImageRepository imageRepository;
+	@Autowired
+	ProductRepository productRepository;
 
 	@GetMapping("/getOnSaleProducts")
 	private ResponseEntity<List<OnSaleProducts>> getOnSaleProducts() {
 		try {
 			List<OnSaleProducts> currentOnsaleProducts = ospRepository.findAll();
+			for(OnSaleProducts osp:currentOnsaleProducts) {
+				OnSaleDTO osd=new OnSaleDTO();
+				osd.setOnSaleProducts(osp);
+				osd.setImages(imageRepository.getByProductId(osp.getProductId().getId()));
+				
+			}
 			return ResponseEntity.ok(currentOnsaleProducts);
 		} catch (Exception ex) {
 			return ResponseEntity.badRequest().body(null);
 		}
 	}
 
-	@PostMapping("/postProductAsSale")
+	@PostMapping("admin/postProductAsSale")
 	private ResponseEntity<Object> postProductAsSale(@RequestBody OnSaleProducts saleProduct) {
 		try {
 			return ResponseEntity.ok(ospService.moveProductToSale(saleProduct));
@@ -48,7 +61,7 @@ public class OnSaleProductController {
 		}
 	}
 
-	@DeleteMapping("/removeProductFromSale")
+	@DeleteMapping("admin/removeProductFromSale")
 	private ResponseEntity<Object> removeProductFromSale(@RequestBody Long id) {
 		try {
 			return ResponseEntity.ok(ospService.revertProductFromSale(id));

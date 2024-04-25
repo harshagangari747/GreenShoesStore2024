@@ -104,6 +104,17 @@ public class ProductController {
 		}
 
 	}
+	
+	@DeleteMapping("admin/deleteProduct/{pid}")
+	private ResponseEntity<Object> deleteProduct(@PathVariable("pid") Long pid){
+		try {
+			productService.deleteProduct(pid);
+			return ResponseEntity.ok("Product Deleted Successfully");
+
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Failed to Delete Product");
+		}
+	}
 //	
 //	@GetMapping("/product/search")
 //	private List<Product> searchProduct(@RequestParam(name="q", required = true) String keyword){
