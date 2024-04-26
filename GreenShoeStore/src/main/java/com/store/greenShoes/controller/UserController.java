@@ -28,6 +28,7 @@ import com.store.greenShoes.model.PaymentInformation;
 import com.store.greenShoes.model.ShippingAddress;
 import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.BillingAddressRepository;
+import com.store.greenShoes.repository.CartItemRepository;
 import com.store.greenShoes.repository.PaymentRepository;
 import com.store.greenShoes.repository.ShippingAddressRepository;
 import com.store.greenShoes.repository.UsersRepository;
@@ -63,6 +64,8 @@ public class UserController {
 	ShippingAddressRepository shippingRepository;
 	@Autowired
 	BillingAddressRepository billingAddressRepository;
+	@Autowired
+	private CartItemRepository cartItemRepository;
 
 	MailService mailService = MailService.GetMailServiceObject();
 
@@ -280,6 +283,8 @@ public class UserController {
             Users user = userRepository.getByEmail(authRequest.getUsername());
             afterLoginDTO.setUserId(user.getUserId());
             afterLoginDTO.setFirstName(user.getFirstName());
+            if(cartItemRepository.findByUser(user)!=null) {
+            afterLoginDTO.setCartId(cartItemRepository.findByUser(user).getId());}
             return afterLoginDTO;
         } else {
             throw new UsernameNotFoundException("invalid user request !");

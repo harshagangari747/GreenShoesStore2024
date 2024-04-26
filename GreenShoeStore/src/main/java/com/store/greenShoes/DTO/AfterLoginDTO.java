@@ -5,6 +5,13 @@ public class AfterLoginDTO {
 	private String email;
 	private String token;
 	private String firstName;
+	private Long cartId;
+	public Long getCartId() {
+		return cartId;
+	}
+	public void setCartId(Long cartId) {
+		this.cartId = cartId;
+	}
 	public String getFirstName() {
 		return firstName;
 	}

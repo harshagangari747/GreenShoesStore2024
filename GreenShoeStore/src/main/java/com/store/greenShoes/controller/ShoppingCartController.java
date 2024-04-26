@@ -73,8 +73,7 @@ public class ShoppingCartController {
 			CartItemDTO ctd=new CartItemDTO();
 			//ProductSizeColor psc=productSizeColorRepository.findByProductSizeColor(null, null, null)
 			ctd.setCartProductSizeColorId(c.getId());
-			ctd.setCartId(Optional.of(c.getCartItem().getId()));
-			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
+			ctd.setColorName(c.getProductSizeColor().getColorId().getColor());
 			ctd.setProductId(c.getProductSizeColor().getProductId().getId());
 			ctd.setProductName(c.getProductSizeColor().getProductId().getName());
 			ctd.setQuantity(c.getQuantity());
@@ -87,6 +86,7 @@ public class ShoppingCartController {
 			ctd.setPrice(c.getProductSizeColor().getProductId().getPrice());
 			cartItemDTO.add(ctd);
 		}
+		
 		return cartItemDTO;
 	}
 	
