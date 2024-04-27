@@ -18,11 +18,13 @@ import com.store.greenShoes.DTO.SizeColorDTO;
 import com.store.greenShoes.model.Color;
 import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.Product;
+import com.store.greenShoes.model.ProductImpactInformation;
 import com.store.greenShoes.model.ProductSizeColor;
 import com.store.greenShoes.model.Size;
 import com.store.greenShoes.repository.CategoryRepository;
 import com.store.greenShoes.repository.ColorRepository;
 import com.store.greenShoes.repository.ImageRepository;
+import com.store.greenShoes.repository.ProductImpactInformationRepository;
 import com.store.greenShoes.repository.ProductRepository;
 import com.store.greenShoes.repository.ProductSizeColorRepository;
 import com.store.greenShoes.repository.SizeRepository;
@@ -43,6 +45,8 @@ public class ProductService {
 	ImageRepository imageRepository;
 	@Autowired
 	ProductSizeColorRepository productSizeColorRepository;
+	@Autowired
+	ProductImpactInformationRepository productImpactInfoRepository;
 	String projectDirectory = System.getProperty("user.dir");
 	private final String FOLDER_PATH = projectDirectory + "/Images/";
 
@@ -60,21 +64,21 @@ public class ProductService {
 			prodDTO.setPrice(product.getPrice());
 			prodDTO.setName(product.getName());
 			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
-			Set<Float> prodSizes=new HashSet<>();
-			Set<String> prodColors=new HashSet<>();
+			Set<Float> prodSizes = new HashSet<>();
+			Set<String> prodColors = new HashSet<>();
 			for (ProductSizeColor psc1 : psc) {
 				float size = psc1.getSizeId().getSize();
 				prodSizes.add(size);
-				String color=psc1.getColorId().getColor();
+				String color = psc1.getColorId().getColor();
 				prodColors.add(color);
-				
+
 			}
 			prodDTO.setSizes(prodSizes);
 			prodDTO.setColor_names(prodColors);
 			Image image = imageRepository.getByProductId(product.getId()).get(0);
 			prodDTO.setImage(image);
 			allProductsDTO.add(prodDTO);
-			
+
 //			List<SizeColorDTO> scdList = new ArrayList<>();
 //			for (ProductSizeColor psc1 : psc) {
 //				Size size = psc1.getSizeId();
@@ -107,12 +111,11 @@ public class ProductService {
 		List<Image> images = productDTO.getImages();
 		Set<SizeColorDTO> scd = productDTO.getSizeColorDTO();
 		product.setAvailable(true);
-		//ProductSizeColor psc = new ProductSizeColor();
+		List<ProductImpactInformation> productEcoImpact = productDTO.getProductEcoImpactInformation();
 		Product insertedProduct = productRepository.save(product);
 		Long productId = insertedProduct.getId();
 		List<Image> imagesUploaded = new ArrayList<Image>();
 		for (SizeColorDTO s : scd) {
-
 			Size s1 = s.getSize();
 			Set<ColorQuantityDTO> colors = s.getColor();
 			for (ColorQuantityDTO c : colors) {
@@ -121,16 +124,17 @@ public class ProductService {
 				psc.setColorId(c.getColor());
 				psc.setQuantity(c.getQuantity());
 				psc.setSizeId(s1);
-				ProductSizeColor psc1=productSizeColorRepository.findByProductSizeColor(insertedProduct, s1, c.getColor());
-				if(psc1==null) {
-				productSizeColorRepository.save(psc);}
+				ProductSizeColor psc1 = productSizeColorRepository.findByProductSizeColor(insertedProduct, s1,
+						c.getColor());
+				if (psc1 == null) {
+					productSizeColorRepository.save(psc);
+				}
 			}
 		}
 
 		images = new ArrayList<Image>();
 		for (MultipartFile file : productImages) {
-			try
-			{
+			try {
 				String awsS3Url = AwsS3Service.GetAwsServiceObj().UploadImages(file);
 				Image imageData = new Image();
 				imageData.setProductId(insertedProduct);
@@ -138,12 +142,17 @@ public class ProductService {
 				images.add(imageData);
 				imagesUploaded.add(imageRepository.save(imageData));
 			}
-			
-			catch(Exception e)
-			{
+
+			catch (Exception e) {
 				System.out.println(e.getMessage());
 				return null;
 			}
+		}
+		
+		for(ProductImpactInformation ecoImpactInfo : productEcoImpact)
+		{
+			ecoImpactInfo.setProduct(insertedProduct);
+			productImpactInfoRepository.save(ecoImpactInfo);
 		}
 		return insertedProduct;
 
@@ -194,8 +203,7 @@ public class ProductService {
 //		}
 
 		return productDTO;
-		
-		
+
 	}
 
 //	public void deleteProduct(Long id) {
@@ -208,12 +216,12 @@ public class ProductService {
 		System.out.println(product.getDescription());
 		List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
 		Set<SizeColorDTO> scdList = new HashSet<>();
-		Set<Float> sizes=new HashSet<>();
+		Set<Float> sizes = new HashSet<>();
 		for (ProductSizeColor psc1 : psc) {
 			Size size = psc1.getSizeId();
 			SizeColorDTO scd = new SizeColorDTO();
 			System.out.println(scd);
-			if(sizes.contains(size.getSize())) {
+			if (sizes.contains(size.getSize())) {
 				System.out.println(size.getSize());
 				continue;
 			}
@@ -232,21 +240,16 @@ public class ProductService {
 
 		}
 		List<Image> images = imageRepository.getByProductId(id);
+		List<ProductImpactInformation> ecoImpactInfo = productImpactInfoRepository.getInformationByProductId(id);
 		prodDTO.setSizeColorDTO(scdList);
 		prodDTO.setProduct(product);
 		prodDTO.setImages(images);
 		prodDTO.setPrice(product.getPrice());
-//		List<Size> sizes= sizeRepository.getByProductId(id);
-//		List<Color> colors = colorRepository.getByProductId(id);
+		prodDTO.setProductEcoImpactInformation(ecoImpactInfo);
 
-//		Product product=productRepository.getReferenceById(id);
-//		ProductDTO DTO=new ProductDTO();
-//		DTO.setSizes(sizes);
-//		DTO.setColors(colors);
-//		DTO.setImages(images);
-//		DTO.setProduct(product);
 		return prodDTO;
 	}
+
 //
 	public List<AllProductsDTO> getProductsByCategory(Integer page, Integer sizes, Long categoryId) {
 //		PageRequest pageable = PageRequest.of(page, size);
@@ -254,7 +257,8 @@ public class ProductService {
 		PageRequest pageable = PageRequest.of(page, sizes);
 		List<AllProductsDTO> allProductsDTO = new ArrayList<>();
 
-		List<Product> products = productRepository.findByCategory(categoryRepository.getReferenceById(categoryId), pageable);
+		List<Product> products = productRepository.findByCategory(categoryRepository.getReferenceById(categoryId),
+				pageable);
 		for (Product product : products) {
 			AllProductsDTO prodDTO = new AllProductsDTO();
 			System.out.println(product.getDescription());
@@ -263,23 +267,24 @@ public class ProductService {
 			prodDTO.setPrice(product.getPrice());
 			prodDTO.setName(product.getName());
 			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
-			Set<Float> prodSizes=new HashSet<>();
-			Set<String> prodColors=new HashSet<>();
+			Set<Float> prodSizes = new HashSet<>();
+			Set<String> prodColors = new HashSet<>();
+			List<ProductImpactInformation> ecoImpactInfo = productImpactInfoRepository.getInformationByProductId(product.getId());
 			for (ProductSizeColor psc1 : psc) {
 				float size = psc1.getSizeId().getSize();
 				prodSizes.add(size);
-				String color=psc1.getColorId().getColor();
+				String color = psc1.getColorId().getColor();
 				prodColors.add(color);
-				
+
 			}
 			prodDTO.setSizes(prodSizes);
 			prodDTO.setColor_names(prodColors);
 			Image image = imageRepository.getByProductId(product.getId()).get(0);
 			prodDTO.setImage(image);
 			allProductsDTO.add(prodDTO);
-	}
-	
-	return allProductsDTO;
+		}
+
+		return allProductsDTO;
 	}
 //
 //	public List<Product> searchProduct(String keyword) {	
@@ -300,14 +305,14 @@ public class ProductService {
 //        return filePath;
 //    }
 
-	public ProductCartDTO getProductBySizeColor(Long pid, Long sid,Long cid) {
-		
-		//ProductCartDTO pcDTO=new ProductCartDTO();
-		Product product=productRepository.getReferenceById(pid);
-		Size size=sizeRepository.getReferenceById(sid);
-		Color color=colorRepository.getReferenceById(cid);
-		ProductSizeColor psc= productSizeColorRepository.findByProductSizeColor(product,size,color);
-		ProductCartDTO productDTO=new ProductCartDTO();
+	public ProductCartDTO getProductBySizeColor(Long pid, Long sid, Long cid) {
+
+		// ProductCartDTO pcDTO=new ProductCartDTO();
+		Product product = productRepository.getReferenceById(pid);
+		Size size = sizeRepository.getReferenceById(sid);
+		Color color = colorRepository.getReferenceById(cid);
+		ProductSizeColor psc = productSizeColorRepository.findByProductSizeColor(product, size, color);
+		ProductCartDTO productDTO = new ProductCartDTO();
 		productDTO.setColorId(cid);
 		productDTO.setSizeId(sid);
 		productDTO.setProductId(pid);
@@ -333,24 +338,24 @@ public class ProductService {
 			prodDTO.setProductId(product.getId());
 			prodDTO.setPrice(product.getPrice());
 			prodDTO.setName(product.getName());
-			Long stockAvailable= productSizeColorRepository.getAvailableStock(product);
+			Long stockAvailable = productSizeColorRepository.getAvailableStock(product);
 			prodDTO.setStockAvailable(stockAvailable);
 			List<ProductSizeColor> psc = productSizeColorRepository.findByProduct(product);
-			Set<Float> prodSizes=new HashSet<>();
-			Set<String> prodColors=new HashSet<>();
+			Set<Float> prodSizes = new HashSet<>();
+			Set<String> prodColors = new HashSet<>();
 			for (ProductSizeColor psc1 : psc) {
 				float size = psc1.getSizeId().getSize();
 				prodSizes.add(size);
-				String color=psc1.getColorId().getColor();
+				String color = psc1.getColorId().getColor();
 				prodColors.add(color);
-				
+
 			}
 			prodDTO.setSizes(prodSizes);
 			prodDTO.setColor_names(prodColors);
 			Image image = imageRepository.getByProductId(product.getId()).get(0);
 			prodDTO.setImage(image);
 			allProductsDTO.add(prodDTO);
-			
+
 //			List<SizeColorDTO> scdList = new ArrayList<>();
 //			for (ProductSizeColor psc1 : psc) {
 //				Size size = psc1.getSizeId();
@@ -378,13 +383,12 @@ public class ProductService {
 	}
 
 	public void deleteProduct(Long pid) throws Exception {
-		try{
-		Product product= productRepository.getReferenceById(pid);
-		product.setAvailable(false);
-		productRepository.save(product);
-		
-	}
-		catch(Exception ex) {
+		try {
+			Product product = productRepository.getReferenceById(pid);
+			product.setAvailable(false);
+			productRepository.save(product);
+
+		} catch (Exception ex) {
 			throw new Exception();
 		}
 	}
@@ -396,5 +400,3 @@ public class ProductService {
 //        byte[] images = Files.readAllBytes(new File(filePath).toPath());
 //        return images;
 //    }
-
-
