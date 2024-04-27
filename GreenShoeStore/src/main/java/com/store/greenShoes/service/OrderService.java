@@ -3,6 +3,7 @@ package com.store.greenShoes.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import com.store.greenShoes.DTO.ResponseOrderDTO;
 import com.store.greenShoes.DTO.ResponseProductWithImageDTO;
 import com.store.greenShoes.model.BillingAddress;
 import com.store.greenShoes.model.Color;
+import com.store.greenShoes.model.Image;
 import com.store.greenShoes.model.OrderDetails;
 import com.store.greenShoes.model.Orders;
 import com.store.greenShoes.model.PaymentInformation;
@@ -127,34 +129,67 @@ public class OrderService {
 		return orderData;
 	}
 
-	public List<OrderDTO> getAllOrders(Long uid) {
-		List<Orders> orders = ordersRepository.findByUser(usersRepository.getReferenceById(uid));
-		List<OrderDTO> orderDTOList = new ArrayList<>();
-		for (Orders order : orders) {
-			OrderDTO orderDTO = new OrderDTO();
-			orderDTO.setOrderId(order.getOrderID());
-			orderDTO.setUserId(uid);
-			orderDTO.setOrderDate(order.getOrderDate());
-			orderDTO.setPaymentInformation(order.getPayment());
-			orderDTO.setShippingAddress(order.getShippingAddress());
-			orderDTO.setTotal(order.getTotalPrice());
-			List<OrderDetails> orderDetails = orderDetailRepository.findByOrder(order);
-			List<ProductWithImageDTO> productSizeColorList = new ArrayList<>();
-			for (OrderDetails orderDetail : orderDetails) {
-				//ProductSizeColorDTO pscDTO = new ProductSizeColorDTO();
-				ProductWithImageDTO pscDTO=new ProductWithImageDTO();
-				pscDTO.setProductId(orderDetail.getProductSizeColor().getProductId().getId());
-				pscDTO.setColorId(orderDetail.getProductSizeColor().getColorId().getID());
-				pscDTO.setSizeId(orderDetail.getProductSizeColor().getSizeId().getID());
-				pscDTO.setQuantity(orderDetail.getQuantity());
-				pscDTO.setImage(imageRepository.getByProductId(orderDetail.getProductSizeColor().getProductId().getId()).get(0));
-				productSizeColorList.add(pscDTO);
-			}
-			orderDTO.setProductWithImageDTO(productSizeColorList);
-			orderDTOList.add(orderDTO);
-		}
+	public List<ResponseOrderDTO> getAllOrders(Long uid) {
+		
+//		List<OrderDTO> orderDTOList = new ArrayList<>();
+//		for (Orders order : orders) {
+//			OrderDTO orderDTO = new OrderDTO();
+//			orderDTO.setOrderId(order.getOrderID());
+//			orderDTO.setUserId(uid);
+//			orderDTO.setOrderDate(order.getOrderDate());
+//			orderDTO.setPaymentInformation(order.getPayment());
+//			orderDTO.setShippingAddress(order.getShippingAddress());
+//			orderDTO.setTotal(order.getTotalPrice());
+//			List<OrderDetails> orderDetails = orderDetailRepository.findByOrder(order);
+//			List<ProductWithImageDTO> productSizeColorList = new ArrayList<>();
+//			for (OrderDetails orderDetail : orderDetails) {
+//				//ProductSizeColorDTO pscDTO = new ProductSizeColorDTO();
+//				ProductWithImageDTO pscDTO=new ProductWithImageDTO();
+//				pscDTO.setProductId(orderDetail.getProductSizeColor().getProductId().getId());
+//				pscDTO.setColorId(orderDetail.getProductSizeColor().getColorId().getID());
+//				pscDTO.setSizeId(orderDetail.getProductSizeColor().getSizeId().getID());
+//				pscDTO.setQuantity(orderDetail.getQuantity());
+//				pscDTO.setImage(imageRepository.getByProductId(orderDetail.getProductSizeColor().getProductId().getId()).get(0));
+//				productSizeColorList.add(pscDTO);
+//			}
+//			orderDTO.setProductWithImageDTO(productSizeColorList);
+//			orderDTOList.add(orderDTO);
+//		}
 
-		return orderDTOList;
+		//return orderDTOList;
+		List<Orders> orders = ordersRepository.findByUser(usersRepository.getReferenceById(uid));
+		List<ResponseOrderDTO> orderDTO = new ArrayList<ResponseOrderDTO>();
+		if (orders.size() == 0) {
+			return null;
+		}
+		for(Orders singleOrder: orders) {
+		List<OrderDetails> singleOrderDetails = orderDetailRepository.findByOrder(singleOrder);
+		List<ResponseProductWithImageDTO> singleOrderPSC = new ArrayList<>();
+		for (OrderDetails o: singleOrderDetails) {
+			ResponseProductWithImageDTO pscDTO = new ResponseProductWithImageDTO();
+			pscDTO.setProductId(o.getProductSizeColor().getProductId().getId());
+			pscDTO.setColor(o.getProductSizeColor().getColorId().getColor());
+			pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
+			pscDTO.setQuantity(o.getQuantity());
+			pscDTO.setPrice(o.getPrice()/o.getQuantity());
+			String color=o.getProductSizeColor().getColorId().getColor().toLowerCase();
+			List<Image> images=imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
+			Optional<Image> image = images.stream()
+	                .filter(img -> img.getURL().contains(color))
+	                .findFirst();
+			pscDTO.setImage(image);
+			singleOrderPSC.add(pscDTO);
+		}
+		ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();
+		singleOrderDTO.setOrderId(singleOrder.getOrderID());
+		singleOrderDTO.setOrderDate(singleOrder.getOrderDate());
+		singleOrderDTO.setPaymentInformation(singleOrder.getPayment());
+		singleOrderDTO.setShippingAddress(singleOrder.getShippingAddress());
+		singleOrderDTO.setProductWithImageDTO(singleOrderPSC);
+		singleOrderDTO.setTotal(singleOrder.getTotalPrice());
+		orderDTO.add(singleOrderDTO);
+		}
+		return orderDTO;
 	}
 
 	public ResponseOrderDTO getOrder(Long oid) {
@@ -171,7 +206,13 @@ public class OrderService {
 			pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
 			pscDTO.setQuantity(o.getQuantity());
 			pscDTO.setPrice(o.getPrice()/o.getQuantity());
-			pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()));
+			String color=o.getProductSizeColor().getColorId().getColor().toLowerCase();
+			List<Image> images=imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
+			Optional<Image> image = images.stream()
+	                .filter(img -> img.getURL().contains(color))
+	                .findFirst();
+			pscDTO.setImage(image);
+			//pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()));
 			singleOrderPSC.add(pscDTO);
 		}
 		ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();

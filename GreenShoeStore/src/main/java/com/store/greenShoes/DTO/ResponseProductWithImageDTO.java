@@ -1,6 +1,7 @@
 package com.store.greenShoes.DTO;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.store.greenShoes.model.Image;
 
@@ -16,7 +17,7 @@ public class ResponseProductWithImageDTO {
 	public void setPrice(float price) {
 		this.price = price;
 	}
-	private List<Image> image;
+	private Optional<Image> image;
 	public Long getProductId() {
 		return productId;
 	}
@@ -42,12 +43,13 @@ public class ResponseProductWithImageDTO {
 	public void setQuantity(Long quantity) {
 		this.quantity = quantity;
 	}
-	public List<Image> getImage() {
+	public Optional<Image> getImage() {
 		return image;
 	}
-	public void setImage(List<Image> image) {
+	public void setImage(Optional<Image> image) {
 		this.image = image;
 	}
+	
 	
 	
 	

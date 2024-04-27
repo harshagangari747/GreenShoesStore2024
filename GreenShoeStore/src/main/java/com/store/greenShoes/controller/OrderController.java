@@ -41,12 +41,12 @@ public class OrderController {
 	}
 
 	@GetMapping("/user/allOrdersOfAUser/{uid}")
-	public List<OrderDTO> getAllOrders(@PathVariable("uid") Long uid) {
+	public List<ResponseOrderDTO> getAllOrders(@PathVariable("uid") Long uid) {
 		return orderService.getAllOrders(uid);
 
 	}
 
-	@GetMapping("/user/singleOrderOfAUser/{oid}")
+	@GetMapping("/singleOrderOfAUser/{oid}")
 	public ResponseEntity<ResponseOrderDTO> getOrder(@PathVariable("oid") Long oid) {
 		try {
 			ResponseOrderDTO getOrder = orderService.getOrder(oid);
