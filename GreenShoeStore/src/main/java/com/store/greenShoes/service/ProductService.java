@@ -201,6 +201,7 @@ public class ProductService {
 		{
 			ProductImpactInformation pei=productImpactInfoRepository.getReferenceById(ecoImpactInfo.getId());
 			pei.setEcoImpact(ecoImpactInfo.getEcoImpact());
+			pei.setProduct(oldProduct);
 			productImpactInfoRepository.save(ecoImpactInfo);
 		}
 //		for(Color c : colors)
