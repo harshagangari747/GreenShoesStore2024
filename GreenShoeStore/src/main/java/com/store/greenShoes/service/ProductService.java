@@ -196,6 +196,13 @@ public class ProductService {
 			}
 
 		}
+		List<ProductImpactInformation> productEcoImpact = productDTO.getProductEcoImpactInformation();
+		for(ProductImpactInformation ecoImpactInfo : productEcoImpact)
+		{
+			ProductImpactInformation pei=productImpactInfoRepository.getReferenceById(ecoImpactInfo.getId());
+			pei.setEcoImpact(ecoImpactInfo.getEcoImpact());
+			productImpactInfoRepository.save(ecoImpactInfo);
+		}
 //		for(Color c : colors)
 //		{
 //			//c.setProductId(insertedProduct);

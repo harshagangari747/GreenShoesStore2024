@@ -79,7 +79,7 @@ public class ShoppingCartController {
 			ctd.setQuantity(c.getQuantity());
 			ctd.setSizeId(c.getProductSizeColor().getSizeId().getID());
 			ctd.setUserId(Optional.of(c.getCartItem().getUser().getUserId()));
-			ctd.setColorName(c.getProductSizeColor().getColorId().getColor());
+			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
 			ctd.setSize(c.getProductSizeColor().getSizeId().getSize());
 			ctd.setStockAvailable(c.getProductSizeColor().getQuantity());
 			ctd.setImages(imageRepository.getByProductId(c.getProductSizeColor().getProductId().getId()));

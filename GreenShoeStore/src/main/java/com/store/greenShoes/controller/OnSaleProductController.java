@@ -1,5 +1,6 @@
 package com.store.greenShoes.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.store.greenShoes.Constants.Constants;
 import com.store.greenShoes.DTO.OnSaleDTO;
@@ -36,16 +37,20 @@ public class OnSaleProductController {
 	ProductRepository productRepository;
 
 	@GetMapping("/getOnSaleProducts")
-	private ResponseEntity<List<OnSaleProducts>> getOnSaleProducts() {
+	private ResponseEntity<List<OnSaleDTO>> getOnSaleProducts() {
 		try {
 			List<OnSaleProducts> currentOnsaleProducts = ospRepository.findAll();
+			List<OnSaleDTO> osDTO=new ArrayList<>();
 			for(OnSaleProducts osp:currentOnsaleProducts) {
+				if(osp.getProductId().isAvailable()) {
 				OnSaleDTO osd=new OnSaleDTO();
 				osd.setOnSaleProducts(osp);
 				osd.setImages(imageRepository.getByProductId(osp.getProductId().getId()));
+				osDTO.add(osd);
+				}
 				
 			}
-			return ResponseEntity.ok(currentOnsaleProducts);
+			return ResponseEntity.ok(osDTO);
 		} catch (Exception ex) {
 			return ResponseEntity.badRequest().body(null);
 		}
