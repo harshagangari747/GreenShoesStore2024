@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,7 +67,7 @@ public class OnSaleProductController {
 			return ResponseEntity.badRequest().body(ex);
 		}
 	}
-	@PutMapping("admin/updateSalePrice/{productId}")
+	@PutMapping("admin/updateSalePrice")
 	ResponseEntity<Object> updatePrice(@RequestBody OnSaleProducts saleProduct) {
 		try {
 			return ResponseEntity.ok(ospService.updatePrice(saleProduct));
@@ -77,7 +78,7 @@ public class OnSaleProductController {
 	}
 
 	@DeleteMapping("admin/removeProductFromSale/{productId}")
-	private ResponseEntity<Object> removeProductFromSale(@RequestParam Long id) {
+	private ResponseEntity<Object> removeProductFromSale(@PathVariable("productId") Long id) {
 		try {
 			return ResponseEntity.ok(ospService.revertProductFromSale(id));
 		} catch (Exception ex) {
