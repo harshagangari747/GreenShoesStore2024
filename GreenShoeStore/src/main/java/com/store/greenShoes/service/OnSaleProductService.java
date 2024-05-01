@@ -54,4 +54,10 @@ public class OnSaleProductService {
 		}
 	}
 
+	public Object updatePrice(OnSaleProducts saleProduct) {
+		OnSaleProducts onSale= ospRepository.getReferenceById(saleProduct.getId());
+		onSale.setSalePrice(saleProduct.getSalePrice());
+		return ospRepository.save(onSale);
+	}
+
 }

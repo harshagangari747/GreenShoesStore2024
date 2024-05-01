@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.store.greenShoes.model.OnSaleProducts;
@@ -64,9 +66,18 @@ public class OnSaleProductController {
 			return ResponseEntity.badRequest().body(ex);
 		}
 	}
+	@PutMapping("admin/updateSalePrice/{productId}")
+	ResponseEntity<Object> updatePrice(@RequestBody OnSaleProducts saleProduct) {
+		try {
+			return ResponseEntity.ok(ospService.updatePrice(saleProduct));
 
-	@DeleteMapping("admin/removeProductFromSale")
-	private ResponseEntity<Object> removeProductFromSale(@RequestBody Long id) {
+		} catch (Exception ex) {
+			return ResponseEntity.badRequest().body(ex);
+		}
+	}
+
+	@DeleteMapping("admin/removeProductFromSale/{productId}")
+	private ResponseEntity<Object> removeProductFromSale(@RequestParam Long id) {
 		try {
 			return ResponseEntity.ok(ospService.revertProductFromSale(id));
 		} catch (Exception ex) {
