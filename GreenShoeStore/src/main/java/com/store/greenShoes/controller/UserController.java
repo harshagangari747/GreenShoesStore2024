@@ -132,6 +132,7 @@ public class UserController {
 	@GetMapping("/checkEmailExists/{email}")
 	private ResponseEntity<Object> checkEmailExists(@PathVariable("email") String email) {
 		Users user = userRepository.getByEmail(email);
+		System.out.print(user);
 		if (!(user == null)) {
 			System.out.println(user.getEmail());
 			return ResponseEntity.badRequest().body("The email is already Present, Failed to Create new User");
@@ -208,8 +209,10 @@ public class UserController {
 	@PutMapping("/resetPassword")
 	private ResponseEntity<String> resetPassword(@RequestBody String email) {
 		try {
+			System.out.print(email);
 			Users tempUser = userRepository.getByEmail(email);
 			if (tempUser == null) {
+				System.out.print(tempUser);
 				return ResponseEntity.badRequest().body(String.format(Constants.resetPasswordUserDoesntExist, email));
 			}
 			System.out.println("Old password" + tempUser.getPassword());
