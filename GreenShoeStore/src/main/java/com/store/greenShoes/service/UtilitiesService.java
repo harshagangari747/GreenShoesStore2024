@@ -1,11 +1,19 @@
 package com.store.greenShoes.service;
 
 import java.security.MessageDigest;
+
 import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import com.store.greenShoes.Constants.Constants;
+import com.store.greenShoes.DTO.OrderDTO;
+import com.store.greenShoes.repository.*;
+
 public class UtilitiesService {
+	@Autowired
+	private static ProductRepository productRepo;
 	static SecureRandom random = new SecureRandom();
 
 	public static String GetRandomPassword() {
@@ -49,9 +57,9 @@ public class UtilitiesService {
 		}
 		return new String(charArray);
 	}
-	
+
 	public static String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
+		return BCrypt.hashpw(password, BCrypt.gensalt());
+	}
 
 }
