@@ -239,8 +239,8 @@ public class UserController {
 		return paymentRepository.getReferenceById(user.getPaymentInformation().getPaymentId());
 	}
 
-	@PutMapping("/resetPassword")
-	private ResponseEntity<String> resetPassword(@RequestBody String email) {
+	@PutMapping("/resetPassword/{email}")
+	private ResponseEntity<String> resetPassword(@PathVariable("email") String email) {
 		try {
 			System.out.print(email);
 			Users tempUser = userRepository.getByEmail(email);
@@ -267,6 +267,25 @@ public class UserController {
 			return ResponseEntity.badRequest().body(String.format(Constants.resetPasswordError, e.getMessage()));
 		}
 	}
+	
+	
+	@PutMapping("/user/updatePassword/{uid}")
+	private UserDTO updatePassword(@RequestBody UserDTO userDTO, @PathVariable("uid") Long uid) {
+		System.out.println("user " + userDTO.getPassword());
+		
+		Users user = userRepository.getReferenceById(uid);
+		user.setPassword(encoder.encode(userDTO.getPassword()));
+		userRepository.save(user);
+		userDTO.setUserId(uid);
+//		user.setBillingAddress(user.getBillingAddress());
+//		user.setPaymentInformation(user.getPaymentInformation());
+//		user.setShippingAddress(user.getShippingAddress());
+		// user.setShippingAddress(userDTO.getShippingAddress());
+//		user.setBillingAddress(userDTO.getBillingAddress());
+//		user.setPaymentInformation(userDTO.getPaymentInformation());
+		return userDTO;
+	}
+	
 	@PutMapping("/user/updateEmail/{uid}")
 	private ResponseEntity<Object>  updateEmail(@PathVariable("uid") Long uid, @RequestBody String email){
 		
