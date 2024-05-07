@@ -95,11 +95,11 @@ public class OrderController {
 	}
 
 	private String PrepareMailBody(OrderDTO order) {
-		String mailBody = Constants.successOrderTableHeader;
+		String mailBody = Constants.successOrderHeaderMailNote + Constants.successOrderTableHeader;
 		String temp = "";
 		for (var product : order.getProductWithImageDTO()) {
 			String productName = productRepo.getReferenceById(product.getProductId()).getName();
-			String cell1 = String.format(Constants.successOrderSingleCell, productName + "-");
+			String cell1 = String.format(Constants.successOrderSingleCell, productName);
 			String cell2 = String.format(Constants.successOrderSingleCell, product.getQuantity());
 			String row = String.format(Constants.successOrderSingleRow, cell1 + cell2);
 			temp += row;
@@ -108,6 +108,7 @@ public class OrderController {
 		mailBody += Constants.successOrderTotalFooter;
 		mailBody += String.format(Constants.successOrderTotal, order.getTotal());
 		mailBody += String.format(Constants.successOrderMailNote, (int) Math.floor(order.getTotal() * 0.15));
+		mailBody += Constants.successOrderFooterMailNote;
 		return mailBody;
 	}
 

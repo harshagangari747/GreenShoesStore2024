@@ -33,16 +33,17 @@ public class Constants {
 	public static String onSaleProductRevertSuccess = "Marked this products as out of sale";
 
 	/* orders */
-	//public static String successOrderTableHeader = "<table><tbody><tr><th>Item</th><th>Quantity</th></tr>";
-	public static String successOrderTableHeader = "<table style='border-collapse: collapse; width: 100%; text-align: center;'><tbody><tr><th style='border: 1px solid #dddddd; padding: 8px;'>Item</th><th style='border: 1px solid #dddddd; padding: 8px;'>Quantity</th></tr>";
-	public static String successOrderSingleRow = "<tr>%s</tr>";
-	public static String successOrderSingleCell = "<td>%s</td>";
+	public static String successOrderHeaderMailNote = "Hello, <br/>We are excited to say that your order has been placed successfully. Thank you for shopping with us! Here is a list of items that you have ordered.<br/><br/>";
+	public static String successOrderTableHeader = "<table style='border-collapse: collapse; width: 100%; text-align: center;border: 1px solid #dddddd; padding: 8px;'><tbody><tr><th style='border: 1px solid #dddddd; padding: 8px;'>Item</th><th style='border:1px solid #dddddd; padding:8px;'>Quantity</th></tr>";
+	public static String successOrderSingleRow = "<tr style='border: 1px solid #dddddd; padding: 8px;'>%s</tr>";
+	public static String successOrderSingleCell = "<td style='border: 1px solid #dddddd; padding: 8px;'>%s</td>";
 	public static String successOrderTotalFooter = "</tbody><tfoot></tfoot></table><br/>";
 	public static String successOrderTotal = "<b>Order Total: $%s</b>";
 	public static String successOrderMailNote = "<br/><p>Thankyou for shopping with us. This means that you are now a part of our team where we together build sustainable eco-friendly future for the forthcoming generations.</p>\r\n"
 			+ "<p>We are proud of you for being a valuable &quot;Green&quot; customer and taking part in saving the lives of &nbsp;millions of aquatic friends. We believe that you keep this spirit and spread this thought to your friends and relatives.</p>\r\n"
 			+ "<p>You have now won %s plastic coins as a token of appreciation. Collect 1000 plastic coins and redeem 2 products at our GreenShoeStore absolutely for free.</p>\r\n"
-			+ "<p>Thank you,<br>GreenShoes</p>";
+			+ "<p>Thank you,<br>Nakka Chowdara<br/> CEO@GreenShoesStore</p><br/>";
+	public static String successOrderFooterMailNote="<br/>Help available at : greenshoeswebstore@gmail.com";
 
 	public static String orderSuccessMailSubject = "Order Success! ID: #%s";
 
