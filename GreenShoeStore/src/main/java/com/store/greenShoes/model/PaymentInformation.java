@@ -1,8 +1,4 @@
 package com.store.greenShoes.model;
-
-
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,8 +9,8 @@ import jakarta.persistence.ManyToOne;
 public class PaymentInformation {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long paymentId;
-	@Column(length=16)
-	private Long ccNumber;
+	//@Column(length=16)
+	private String creditCard;
 	private int expYear;
 	private int expMonth;
 	//private Date expirationDate;
@@ -40,11 +36,12 @@ public class PaymentInformation {
 	public void setPaymentId(Long paymentId) {
 		this.paymentId = paymentId;
 	}
-	public Long getCcNumber() {
-		return ccNumber;
+	
+	public String getCreditCard() {
+		return creditCard;
 	}
-	public void setCcNumber(Long ccNumber) {
-		this.ccNumber = ccNumber;
+	public void setCreditCard(String creditCard) {
+		this.creditCard = creditCard;
 	}
 	public int getExpYear() {
 		return expYear;
