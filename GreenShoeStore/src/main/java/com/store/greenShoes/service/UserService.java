@@ -58,5 +58,41 @@ public class UserService {
 		userRepository.save(user);
 		return ResponseEntity.ok(paymentInformation);
 	}
+	public ResponseEntity<Object> deleteShippingAddress(Long uid){
+		Users user = userRepository.getReferenceById(uid);
+		user.setShippingAddress(null);
+		try {
+		userRepository.save(user);
+		return ResponseEntity.ok(user);
+		}
+		catch (Exception e) {
+			return ResponseEntity.ok().body(new Exception());
+		}
+		
+		
+		 
+	}
+	public ResponseEntity<Object> deleteBillingAddress(Long uid) {
+		Users user = userRepository.getReferenceById(uid);
+		user.setBillingAddress(null);
+		try {
+		userRepository.save(user);
+		return ResponseEntity.ok(user);
+		}
+		catch (Exception e) {
+			return ResponseEntity.ok().body(new Exception());
+		}
+	}
+	public ResponseEntity<Object> deletePaymentAddress(Long uid) {
+		Users user = userRepository.getReferenceById(uid);
+		user.setPaymentInformation(null);
+		try {
+		userRepository.save(user);
+		return ResponseEntity.ok(user);
+		}
+		catch (Exception e) {
+			return ResponseEntity.ok().body(new Exception());
+	}
 
+}
 }
