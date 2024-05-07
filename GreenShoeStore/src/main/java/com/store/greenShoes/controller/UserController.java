@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -158,6 +159,38 @@ public class UserController {
 	@PostMapping("user/userPaymentInformation/{uid}")
 	private ResponseEntity<Object> postPayment(@RequestBody PaymentInformation payment, @PathVariable("uid") Long uid) {
 		return userService.postPayment(payment, uid);
+
+	}
+	
+	@DeleteMapping("/user/deleteShippingAddress/{uid}")
+	private ResponseEntity<Object> deleteShippingAddress(
+			@PathVariable("uid") Long uid) {
+		try {
+		return userService.deleteShippingAddress(uid);}
+		catch (Exception e) {
+			return ResponseEntity.ok().body("unable to delete information");
+		}
+
+	}
+	
+	@DeleteMapping("/user/deleteBillingAddress/{uid}")
+	private ResponseEntity<Object> deleteBillingAddress(
+			@PathVariable("uid") Long uid) {
+		try {
+		return userService.deleteBillingAddress(uid);}
+		catch (Exception e) {
+			return ResponseEntity.ok().body("unable to delete information");
+		}
+
+	}
+	@DeleteMapping("/user/deletePaymentAddress/{uid}")
+	private ResponseEntity<Object> deletePaymentAddress(
+			@PathVariable("uid") Long uid) {
+		try {
+		return userService.deletePaymentAddress(uid);}
+		catch (Exception e) {
+			return ResponseEntity.ok().body("unable to delete information");
+		}
 
 	}
 
