@@ -13,15 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.greenShoes.Constants.Constants;
 import com.store.greenShoes.DTO.OrderDTO;
 import com.store.greenShoes.DTO.ResponseOrderDTO;
 import com.store.greenShoes.model.Users;
 import com.store.greenShoes.repository.OrdersRepository;
+import com.store.greenShoes.repository.ProductRepository;
 import com.store.greenShoes.repository.UsersRepository;
+import com.store.greenShoes.service.MailService;
 import com.store.greenShoes.service.OrderService;
+import com.store.greenShoes.service.UtilitiesService;
 
 @RestController
-@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = "http://localhost:3000", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT })
 public class OrderController {
 	@Autowired
 	OrdersRepository orderRepo;
@@ -29,15 +34,24 @@ public class OrderController {
 	OrderService orderService;
 	@Autowired
 	UsersRepository userRepo;
+	@Autowired
+	ProductRepository productRepo;
 
 	@PostMapping("order")
-	public OrderDTO postOrder(@RequestBody OrderDTO orderData) {
+	public ResponseEntity<Object> postOrder(@RequestBody OrderDTO orderData) {
 		System.out.println("con" + orderData);
 		Users customer = null;
 		if (orderData.getUserId() != null) {
 			customer = userRepo.getReferenceById(orderData.getUserId());
 		}
-		return orderService.postorder(orderData, customer);
+		try {
+			OrderDTO response = orderService.postorder(orderData, customer);
+			SendOrderConfirmationMail(response, customer);
+			return ResponseEntity.ok(response);
+
+		} catch (Exception ex) {
+			return ResponseEntity.badRequest().body("Can't place Order");
+		}
 	}
 
 	@GetMapping("/user/allOrdersOfAUser/{uid}")
@@ -56,15 +70,46 @@ public class OrderController {
 		}
 
 	}
-	
+
 	@DeleteMapping("/cancelOrder/{oid}")
-	public  Object cancelOrder(@PathVariable("oid") Long oid) {
+	public Object cancelOrder(@PathVariable("oid") Long oid) {
 		try {
-			
+
 			return orderService.DeleteOrder(oid);
 		} catch (Exception ex) {
 			return ResponseEntity.badRequest().body(null);
 		}
+	}
+
+	private void SendOrderConfirmationMail(OrderDTO placedOrder, Users customer) {
+		String mailBody;
+		try {
+			mailBody = PrepareMailBody(placedOrder);
+			String mailSubject = String.format(Constants.orderSuccessMailSubject, placedOrder.getOrderId());
+			MailService.GetMailServiceObject().sendMail(customer.getEmail(), mailSubject, mailBody);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private String PrepareMailBody(OrderDTO order) {
+		String mailBody = Constants.successOrderHeaderMailNote + Constants.successOrderTableHeader;
+		String temp = "";
+		for (var product : order.getProductWithImageDTO()) {
+			String productName = productRepo.getReferenceById(product.getProductId()).getName();
+			String cell1 = String.format(Constants.successOrderSingleCell, productName);
+			String cell2 = String.format(Constants.successOrderSingleCell, product.getQuantity());
+			String row = String.format(Constants.successOrderSingleRow, cell1 + cell2);
+			temp += row;
+		}
+		mailBody += temp;
+		mailBody += Constants.successOrderTotalFooter;
+		mailBody += String.format(Constants.successOrderTotal, order.getTotal());
+		mailBody += String.format(Constants.successOrderMailNote, (int) Math.floor(order.getTotal() * 0.15));
+		mailBody += Constants.successOrderFooterMailNote;
+		return mailBody;
 	}
 
 }

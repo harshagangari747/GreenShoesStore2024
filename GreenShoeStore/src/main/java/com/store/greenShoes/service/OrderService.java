@@ -65,72 +65,80 @@ public class OrderService {
 	ImageRepository imageRepository;
 
 	public OrderDTO postorder(OrderDTO orderData, Users customer) {
-		Orders order = new Orders();
-		float total = 0;
-		//DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
-		LocalDate now = LocalDate.now();  
+		try {
+
+			Orders order = new Orders();
+			float total = 0;
+			// DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+			LocalDate now = LocalDate.now();
 //		Date myDate = new Date();
-		order.setOrderDate(now);
-		order.setTotalPrice(orderData.getTotal());
-		Users user = null;
-		if (customer != null) {
-			user = usersRepository.getReferenceById(customer.getUserId());
+			order.setOrderDate(now);
+			order.setTotalPrice(orderData.getTotal());
+			Users user = null;
+			if (customer != null) {
+				user = usersRepository.getReferenceById(customer.getUserId());
+			}
+			ShippingAddress shippingAddress;
+			PaymentInformation paymentInformation;
+			BillingAddress billingAddress;
+			if (orderData.getShippingAddress() != null) {
+				shippingAddress = shippingAddressRepo.save(orderData.getShippingAddress());
+			} else {
+				shippingAddress = user.getShippingAddress();
+			}
+			if (orderData.getBillingAddress() != null) {
+				billingAddress = billingAddressRepo.save(orderData.getBillingAddress());
+			} else {
+				billingAddress = user.getBillingAddress();
+			}
+			if (orderData.getPaymentInformation() != null) {
+				paymentInformation = orderData.getPaymentInformation();
+				paymentInformation.setBillingAddress(billingAddress);
+				paymentInformation = paymentRepository.save(paymentInformation);
+			} else {
+				paymentInformation = user.getPaymentInformation();
+			}
+			order.setPayment(paymentInformation);
+			order.setShippingAddress(shippingAddress);
+			if (user != null) {
+				order.setUser(user);
+			}
+			order = ordersRepository.save(order);
+			// List<ProductSizeColorQuantityDTO>
+			// pscList=orderData.getProductSizeColorQuantityList();
+			orderData.setBillingAddress(billingAddress);
+			orderData.setPaymentInformation(paymentInformation);
+			orderData.setShippingAddress(shippingAddress);
+			List<ProductWithImageDTO> pscList = orderData.getProductWithImageDTO();
+			for (ProductWithImageDTO psc : pscList) {
+				OrderDetails orderDetails = new OrderDetails();
+				orderDetails.setOrder(order);
+				Product product = productRepository.getReferenceById(psc.getProductId());
+				Size size = sizeRepository.getReferenceById(psc.getSizeId());
+				Color color = colorRepository.getReferenceById(psc.getColorId());
+				ProductSizeColor psc1 = productSizeColorRepository.findByProductSizeColor(product, size, color);
+				orderDetails.setProductSizeColor(psc1);
+				psc1 = productSizeColorRepository.getReferenceById(psc1.getId());
+				orderDetails.setQuantity(psc.getQuantity());
+				psc1.setQuantity(psc1.getQuantity() - psc.getQuantity());
+				productSizeColorRepository.save(psc1);
+				orderDetails.setPrice(psc.getQuantity() * psc1.getProductId().getPrice());
+				// total+=orderDetails.getPrice();
+				orderDetailRepository.save(orderDetails);
+			}
+			if (orderData.getCartId() != null) {
+				shoppingcart.removeProducts(orderData.getCartId());
+			}
+			orderData.setOrderId(order.getOrderID());
+			return orderData;
+		} catch (Exception ex) {
+			return null;
+
 		}
-		ShippingAddress shippingAddress;
-		PaymentInformation paymentInformation;
-		BillingAddress billingAddress;
-		if (orderData.getShippingAddress() != null) {
-			shippingAddress = shippingAddressRepo.save(orderData.getShippingAddress());
-		} else {
-			shippingAddress = user.getShippingAddress();
-		}
-		if (orderData.getBillingAddress() != null) {
-			billingAddress = billingAddressRepo.save(orderData.getBillingAddress());
-		} else {
-			billingAddress = user.getBillingAddress();
-		}
-		if (orderData.getPaymentInformation() != null) {
-			paymentInformation = orderData.getPaymentInformation();
-			paymentInformation.setBillingAddress(billingAddress);
-			paymentInformation = paymentRepository.save(paymentInformation);
-		} else {
-			paymentInformation = user.getPaymentInformation();
-		}
-		order.setPayment(paymentInformation);
-		order.setShippingAddress(shippingAddress);
-		if (user != null) {
-			order.setUser(user);
-		}
-		order = ordersRepository.save(order);
-		// List<ProductSizeColorQuantityDTO>
-		// pscList=orderData.getProductSizeColorQuantityList();
-		orderData.setBillingAddress(billingAddress);
-		orderData.setPaymentInformation(paymentInformation);
-		orderData.setShippingAddress(shippingAddress);
-		List<ProductWithImageDTO> pscList = orderData.getProductWithImageDTO();
-		for (ProductWithImageDTO psc : pscList) {
-			OrderDetails orderDetails = new OrderDetails();
-			orderDetails.setOrder(order);
-			Product product = productRepository.getReferenceById(psc.getProductId());
-			Size size = sizeRepository.getReferenceById(psc.getSizeId());
-			Color color = colorRepository.getReferenceById(psc.getColorId());
-			ProductSizeColor psc1 = productSizeColorRepository.findByProductSizeColor(product, size, color);
-			orderDetails.setProductSizeColor(psc1);
-			psc1 = productSizeColorRepository.getReferenceById(psc1.getId());
-			orderDetails.setQuantity(psc.getQuantity());
-			psc1.setQuantity(psc1.getQuantity() - psc.getQuantity());
-			productSizeColorRepository.save(psc1);
-			orderDetails.setPrice(psc.getQuantity() * psc1.getProductId().getPrice());
-			//total+=orderDetails.getPrice();
-			orderDetailRepository.save(orderDetails);
-		}if(orderData.getCartId()!=null) {
-		shoppingcart.removeProducts(orderData.getCartId());}
-		orderData.setOrderId(order.getOrderID());
-		return orderData;
 	}
 
 	public List<ResponseOrderDTO> getAllOrders(Long uid) {
-		
+
 //		List<OrderDTO> orderDTOList = new ArrayList<>();
 //		for (Orders order : orders) {
 //			OrderDTO orderDTO = new OrderDTO();
@@ -156,38 +164,36 @@ public class OrderService {
 //			orderDTOList.add(orderDTO);
 //		}
 
-		//return orderDTOList;
+		// return orderDTOList;
 		List<Orders> orders = ordersRepository.findByUser(usersRepository.getReferenceById(uid));
 		List<ResponseOrderDTO> orderDTO = new ArrayList<ResponseOrderDTO>();
 		if (orders.size() == 0) {
 			return null;
 		}
-		for(Orders singleOrder: orders) {
-		List<OrderDetails> singleOrderDetails = orderDetailRepository.findByOrder(singleOrder);
-		List<ResponseProductWithImageDTO> singleOrderPSC = new ArrayList<>();
-		for (OrderDetails o: singleOrderDetails) {
-			ResponseProductWithImageDTO pscDTO = new ResponseProductWithImageDTO();
-			pscDTO.setProductId(o.getProductSizeColor().getProductId().getId());
-			pscDTO.setColor(o.getProductSizeColor().getColorId().getColor());
-			pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
-			pscDTO.setQuantity(o.getQuantity());
-			pscDTO.setPrice(o.getPrice()/o.getQuantity());
-			String color=o.getProductSizeColor().getColorId().getColor().toLowerCase();
-			List<Image> images=imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
-			Optional<Image> image = images.stream()
-	                .filter(img -> img.getURL().contains(color))
-	                .findFirst();
-			pscDTO.setImage(image);
-			singleOrderPSC.add(pscDTO);
-		}
-		ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();
-		singleOrderDTO.setOrderId(singleOrder.getOrderID());
-		singleOrderDTO.setOrderDate(singleOrder.getOrderDate());
-		singleOrderDTO.setPaymentInformation(singleOrder.getPayment());
-		singleOrderDTO.setShippingAddress(singleOrder.getShippingAddress());
-		singleOrderDTO.setProductWithImageDTO(singleOrderPSC);
-		singleOrderDTO.setTotal(singleOrder.getTotalPrice());
-		orderDTO.add(singleOrderDTO);
+		for (Orders singleOrder : orders) {
+			List<OrderDetails> singleOrderDetails = orderDetailRepository.findByOrder(singleOrder);
+			List<ResponseProductWithImageDTO> singleOrderPSC = new ArrayList<>();
+			for (OrderDetails o : singleOrderDetails) {
+				ResponseProductWithImageDTO pscDTO = new ResponseProductWithImageDTO();
+				pscDTO.setProductId(o.getProductSizeColor().getProductId().getId());
+				pscDTO.setColor(o.getProductSizeColor().getColorId().getColor());
+				pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
+				pscDTO.setQuantity(o.getQuantity());
+				pscDTO.setPrice(o.getPrice() / o.getQuantity());
+				String color = o.getProductSizeColor().getColorId().getColor().toLowerCase();
+				List<Image> images = imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
+				Optional<Image> image = images.stream().filter(img -> img.getURL().contains(color)).findFirst();
+				pscDTO.setImage(image);
+				singleOrderPSC.add(pscDTO);
+			}
+			ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();
+			singleOrderDTO.setOrderId(singleOrder.getOrderID());
+			singleOrderDTO.setOrderDate(singleOrder.getOrderDate());
+			singleOrderDTO.setPaymentInformation(singleOrder.getPayment());
+			singleOrderDTO.setShippingAddress(singleOrder.getShippingAddress());
+			singleOrderDTO.setProductWithImageDTO(singleOrderPSC);
+			singleOrderDTO.setTotal(singleOrder.getTotalPrice());
+			orderDTO.add(singleOrderDTO);
 		}
 		return orderDTO;
 	}
@@ -205,14 +211,12 @@ public class OrderService {
 			pscDTO.setColor(o.getProductSizeColor().getColorId().getColor());
 			pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
 			pscDTO.setQuantity(o.getQuantity());
-			pscDTO.setPrice(o.getPrice()/o.getQuantity());
-			String color=o.getProductSizeColor().getColorId().getColor().toLowerCase();
-			List<Image> images=imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
-			Optional<Image> image = images.stream()
-	                .filter(img -> img.getURL().contains(color))
-	                .findFirst();
+			pscDTO.setPrice(o.getPrice() / o.getQuantity());
+			String color = o.getProductSizeColor().getColorId().getColor().toLowerCase();
+			List<Image> images = imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
+			Optional<Image> image = images.stream().filter(img -> img.getURL().contains(color)).findFirst();
 			pscDTO.setImage(image);
-			//pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()));
+			// pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()));
 			singleOrderPSC.add(pscDTO);
 		}
 		ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();
@@ -224,20 +228,23 @@ public class OrderService {
 		singleOrderDTO.setTotal(singleOrder.getTotalPrice());
 		return singleOrderDTO;
 	}
+
 	@Transactional
 	public Object DeleteOrder(Long oid) {
-		Orders order=ordersRepository.getReferenceById(oid);
-		if(order!=null) {
-			List<OrderDetails> orders= orderDetailRepository.findByOrder(order);
-			for(OrderDetails singleOrder: orders) {
-				ProductSizeColor psc = productSizeColorRepository.getReferenceById(singleOrder.getProductSizeColor().getId());
-				psc.setQuantity(psc.getQuantity()+singleOrder.getQuantity());
+		Orders order = ordersRepository.getReferenceById(oid);
+		if (order != null) {
+			List<OrderDetails> orders = orderDetailRepository.findByOrder(order);
+			for (OrderDetails singleOrder : orders) {
+				ProductSizeColor psc = productSizeColorRepository
+						.getReferenceById(singleOrder.getProductSizeColor().getId());
+				psc.setQuantity(psc.getQuantity() + singleOrder.getQuantity());
 				productSizeColorRepository.save(psc);
-				
+
 			}
-		orderDetailRepository.deleteByOrder(order);
-		ordersRepository.deleteById(oid);
-		return ResponseEntity.ok("Cancelled Successfully");}
+			orderDetailRepository.deleteByOrder(order);
+			ordersRepository.deleteById(oid);
+			return ResponseEntity.ok("Cancelled Successfully");
+		}
 		return ResponseEntity.badRequest().body("No Orders with this ID");
 	}
 
