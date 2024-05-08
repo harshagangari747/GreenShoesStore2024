@@ -13,16 +13,30 @@ public class CartItemDTO {
 	public void setCartProductSizeColorId(Long cartProductSizeColorId) {
 		this.cartProductSizeColorId = cartProductSizeColorId;
 	}
-	private Optional<Long> cartId;
-	
-	public Optional<Long> getCartId() {
+	private Long cartId;
+	private Long userId;
+public Long getCartId() {
 		return cartId;
 	}
-	public void setCartId(Optional<Long> cartId) {
+	public void setCartId(Long cartId) {
 		this.cartId = cartId;
 	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	//	private Optional<Long> cartId;
+//	
+//	public Optional<Long> getCartId() {
+//		return cartId;
+//	}
+//	public void setCartId(Optional<Long> cartId) {
+//		this.cartId = cartId;
+//	}
 	private Long productId;
-	private Optional<Long> userId;
+	//private Optional<Long> userId;
 	private Long quantity;
 	private Long colorId;
 	private Long sizeId;
@@ -75,12 +89,12 @@ public class CartItemDTO {
 		this.productId = productId;
 	}
 	
-	public Optional<Long> getUserId() {
-		return userId;
-	}
-	public void setUserId(Optional<Long> userId) {
-		this.userId = userId;
-	}
+//	public Optional<Long> getUserId() {
+//		return userId;
+//	}
+//	public void setUserId(Optional<Long> userId) {
+//		this.userId = userId;
+//	}
 	public Long getQuantity() {
 		return quantity;
 	}

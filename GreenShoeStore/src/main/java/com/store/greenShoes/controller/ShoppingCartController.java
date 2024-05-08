@@ -65,6 +65,7 @@ public class ShoppingCartController {
 	public List<CartItemDTO> showShoppingCart(@PathVariable("uid") Long customerId) {
 		Users customer=userRepository.getReferenceById(customerId);
 		CartItem cartItem = cartItemRepository.findByUser(customer);
+		if(cartItem!=null) {
 		List<CartColorSizeProduct> cartColorSizeProducts=cartColorSizeProductRepository.findByCartItem(cartItem);
 		//List<CartItem> cartItems=shoppingCartServices.listCartItems(customer);
 		List<CartItemDTO> cartItemDTO= new ArrayList<>();
@@ -78,7 +79,7 @@ public class ShoppingCartController {
 			ctd.setProductName(c.getProductSizeColor().getProductId().getName());
 			ctd.setQuantity(c.getQuantity());
 			ctd.setSizeId(c.getProductSizeColor().getSizeId().getID());
-			ctd.setUserId(Optional.of(c.getCartItem().getUser().getUserId()));
+			ctd.setUserId(c.getCartItem().getUser().getUserId());
 			ctd.setColorId(c.getProductSizeColor().getColorId().getID());
 			ctd.setSize(c.getProductSizeColor().getSizeId().getSize());
 			ctd.setStockAvailable(c.getProductSizeColor().getQuantity());
@@ -87,11 +88,15 @@ public class ShoppingCartController {
 			cartItemDTO.add(ctd);
 		}
 		
-		return cartItemDTO;
+		return cartItemDTO;}
+		else {
+			return null;
+		}
 	}
 	
 	@PostMapping("/user/cart")
 	public CartColorSizeProduct addProduct(@RequestBody CartItemDTO cartItemDTO) {
+		System.out.println("User Id"+cartItemDTO.getUserId());
 		Product product=productRepository.getReferenceById(cartItemDTO.getProductId());
 		Users customer=null;
 		if(cartItemDTO.getUserId()!=null) {
@@ -103,7 +108,9 @@ public class ShoppingCartController {
 		Long quantity=cartItemDTO.getQuantity();
 		ProductSizeColor psc1= productSizeColorRepository.findByProductSizeColor(product, size,color);
 		CartItem cartItem;
+		System.out.println("Cart Id"+cartItemDTO.getCartId());
 		if(cartItemDTO.getCartId()==null) {
+			System.out.println("User Id"+cartItemDTO.getUserId());
 			cartItem= new CartItem();
 			cartItem.setUser(customer);
 			cartItem=cartItemRepository.save(cartItem);}

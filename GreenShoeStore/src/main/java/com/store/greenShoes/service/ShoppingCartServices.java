@@ -55,12 +55,14 @@ public class ShoppingCartServices {
 		
 		CartColorSizeProduct c= cartColorSizeProductRepository.save(cartColorSizeProduct);
 		CartItemDTO ctd=new CartItemDTO();
-		ctd.setCartId(Optional.of(c.getCartItem().getId()));
+		//ctd.setCartId(Optional.of(c.getCartItem().getId()));
+		ctd.setCartId(c.getCartItem().getId());
 		ctd.setColorId(c.getProductSizeColor().getColorId().getID());
 		ctd.setProductId(c.getProductSizeColor().getProductId().getId());
 		ctd.setQuantity(c.getQuantity());
 		ctd.setSizeId(c.getProductSizeColor().getSizeId().getID());
-		ctd.setUserId(Optional.of(c.getCartItem().getUser().getUserId()));
+		//ctd.setUserId(Optional.of(c.getCartItem().getUser().getUserId()));
+		ctd.setUserId(c.getCartItem().getUser().getUserId());
 		
 		return ctd;
 		

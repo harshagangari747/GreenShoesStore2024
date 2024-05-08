@@ -15,11 +15,11 @@ public class Constants {
 	/* user account constants */
 	public static String userAccountCreationSuccessfulEmailSubject = "Account Creation Successful!";
 	public static String userAccountCreationSuccessfulEmailBody = "<p>Hello %s,</p>\r\n"
-			+ "<img src=\"https://web-shoes-images-bucket.s3.amazonaws.com/rc-blue-1.png\"/>"
+			+ "<img src=\"https://web-shoes-images-bucket.s3.amazonaws.com/shoes-up.jpeg\"/>"
 			+ "<p>Your account with GreenShoeStore is successfully registered. With an account you can manage your shopping detail, view orders and much more.&nbsp;</p>\r\n"
 			+ "<p>GreenShoeStore is backed up by an NGO that makes a potential positive impact towards environment. We recycle plastic wastage which poses severe threat to our environment.</p>\r\n"
 			+ "<p>Thankyou for your thoughts and participating in making our future sustainable.</p>\r\n"
-			+ "<p>Regards,</p>\r\n" + "<p>Nakka Chowdara,</p>\r\n" + "<p>CEO @ GreenShoeStore&nbsp;</p>";
+			+ "<p>Regards,</p>\r\n" + "GreenShoeStore&nbsp;</p>";
 
 	/* sale product constants */;
 
