@@ -70,6 +70,16 @@ public class OrderController {
 		}
 
 	}
+	@GetMapping("/singleOrderOfAUser/{uid}/{oid}")
+	public ResponseEntity<Object> getOrderOfUser(@PathVariable("oid") Long oid, @PathVariable("uid") Long uid) {
+		try {
+			ResponseOrderDTO getOrder = orderService.getOrderOfUser(oid,uid);
+			return ResponseEntity.ok(getOrder);
+		} catch (Exception ex) {
+			return ResponseEntity.badRequest().body("No Order Found");
+		}
+
+	}
 
 	@DeleteMapping("/cancelOrder/{oid}")
 	public Object cancelOrder(@PathVariable("oid") Long oid) {

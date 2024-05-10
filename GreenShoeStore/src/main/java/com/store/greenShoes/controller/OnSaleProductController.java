@@ -48,6 +48,7 @@ public class OnSaleProductController {
 				if(osp.getProductId().isAvailable()) {
 				OnSaleDTO osd=new OnSaleDTO();
 				osd.setOnSaleProducts(osp);
+				System.out.print("Sale Price"+osp.getSalePrice());
 				osd.setImages(imageRepository.getByProductId(osp.getProductId().getId()));
 				osDTO.add(osd);
 				}

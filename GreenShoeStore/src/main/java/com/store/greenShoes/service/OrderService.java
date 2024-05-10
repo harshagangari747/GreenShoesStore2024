@@ -248,4 +248,36 @@ public class OrderService {
 		return ResponseEntity.badRequest().body("No Orders with this ID");
 	}
 
+	public ResponseOrderDTO getOrderOfUser(Long oid, Long uid) {
+		Users user = usersRepository.getReferenceById(uid);
+		Orders singleOrder = ordersRepository.getByUserAndOrder(oid,user);
+	if (singleOrder == null) {
+		return null;
+	}
+	List<OrderDetails> singleOrderDetails = orderDetailRepository.findByOrder(singleOrder);
+	List<ResponseProductWithImageDTO> singleOrderPSC = new ArrayList<>();
+	for (OrderDetails o : singleOrderDetails) {
+		ResponseProductWithImageDTO pscDTO = new ResponseProductWithImageDTO();
+		pscDTO.setProductId(o.getProductSizeColor().getProductId().getId());
+		pscDTO.setColor(o.getProductSizeColor().getColorId().getColor());
+		pscDTO.setSize(o.getProductSizeColor().getSizeId().getSize());
+		pscDTO.setQuantity(o.getQuantity());
+		pscDTO.setPrice(o.getPrice() / o.getQuantity());
+		String color = o.getProductSizeColor().getColorId().getColor().toLowerCase();
+		List<Image> images = imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId());
+		Optional<Image> image = images.stream().filter(img -> img.getURL().contains(color)).findFirst();
+		pscDTO.setImage(image);
+		// pscDTO.setImage(imageRepository.getByProductId(o.getProductSizeColor().getProductId().getId()));
+		singleOrderPSC.add(pscDTO);
+	}
+	ResponseOrderDTO singleOrderDTO = new ResponseOrderDTO();
+	singleOrderDTO.setOrderId(singleOrder.getOrderID());
+	singleOrderDTO.setOrderDate(singleOrder.getOrderDate());
+	singleOrderDTO.setPaymentInformation(singleOrder.getPayment());
+	singleOrderDTO.setShippingAddress(singleOrder.getShippingAddress());
+	singleOrderDTO.setProductWithImageDTO(singleOrderPSC);
+	singleOrderDTO.setTotal(singleOrder.getTotalPrice());
+	return singleOrderDTO;
+}
+
 }

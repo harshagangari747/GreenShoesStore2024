@@ -15,7 +15,7 @@ public class Constants {
 	/* user account constants */
 	public static String userAccountCreationSuccessfulEmailSubject = "Account Creation Successful!";
 	public static String userAccountCreationSuccessfulEmailBody = "<p>Hello %s,</p>\r\n"
-			+ "<img src=\"https://web-shoes-images-bucket.s3.amazonaws.com/shoes-up.jpeg\"/>"
+			+ "<img src=\"https://web-shoes-images-bucket.s3.amazonaws.com/eco-impact-registration-mail+(1).png\"/>"
 			+ "<p>Your account with GreenShoeStore is successfully registered. With an account you can manage your shopping detail, view orders and much more.&nbsp;</p>\r\n"
 			+ "<p>GreenShoeStore is backed up by an NGO that makes a potential positive impact towards environment. We recycle plastic wastage which poses severe threat to our environment.</p>\r\n"
 			+ "<p>Thankyou for your thoughts and participating in making our future sustainable.</p>\r\n"
@@ -42,7 +42,7 @@ public class Constants {
 	public static String successOrderMailNote = "<br/><p>Thankyou for shopping with us. This means that you are now a part of our team where we together build sustainable eco-friendly future for the forthcoming generations.</p>\r\n"
 			+ "<p>We are proud of you for being a valuable &quot;Green&quot; customer and taking part in saving the lives of &nbsp;millions of aquatic friends. We believe that you keep this spirit and spread this thought to your friends and relatives.</p>\r\n"
 			+ "<p>You have now won %s plastic coins as a token of appreciation. Collect 1000 plastic coins and redeem 2 products at our GreenShoeStore absolutely for free.</p>\r\n"
-			+ "<p>Thank you,<br>Nakka Chowdara<br/> CEO@GreenShoesStore</p><br/>";
+			+ "<p>Thank you<br/> CEO@GreenShoesStore</p><br/>";
 	public static String successOrderFooterMailNote="<br/>Help available at : greenshoeswebstore@gmail.com";
 
 	public static String orderSuccessMailSubject = "Order Success! ID: #%s";
