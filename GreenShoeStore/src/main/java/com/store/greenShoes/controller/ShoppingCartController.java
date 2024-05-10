@@ -85,6 +85,7 @@ public class ShoppingCartController {
 			ctd.setStockAvailable(c.getProductSizeColor().getQuantity());
 			ctd.setImages(imageRepository.getByProductId(c.getProductSizeColor().getProductId().getId()));
 			ctd.setPrice(c.getProductSizeColor().getProductId().getPrice());
+			ctd.setCartId(cartItem.getId());
 			cartItemDTO.add(ctd);
 		}
 		

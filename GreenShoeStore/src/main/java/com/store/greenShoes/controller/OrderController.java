@@ -50,7 +50,7 @@ public class OrderController {
 			return ResponseEntity.ok(response);
 
 		} catch (Exception ex) {
-			return ResponseEntity.badRequest().body("Can't place Order");
+			return ResponseEntity.badRequest().body("Can't place Order"+ex.getLocalizedMessage());
 		}
 	}
 
@@ -61,12 +61,12 @@ public class OrderController {
 	}
 
 	@GetMapping("/singleOrderOfAUser/{oid}")
-	public ResponseEntity<ResponseOrderDTO> getOrder(@PathVariable("oid") Long oid) {
+	public ResponseEntity<Object> getOrder(@PathVariable("oid") Long oid) {
 		try {
 			ResponseOrderDTO getOrder = orderService.getOrder(oid);
 			return ResponseEntity.ok(getOrder);
 		} catch (Exception ex) {
-			return ResponseEntity.badRequest().body(null);
+			return ResponseEntity.badRequest().body("No Order Found");
 		}
 
 	}
@@ -81,15 +81,19 @@ public class OrderController {
 		}
 	}
 
-	private void SendOrderConfirmationMail(OrderDTO placedOrder, Users customer) {
+	private void SendOrderConfirmationMail(OrderDTO placedOrder, Users customer) throws Exception {
 		String mailBody;
 		try {
 			mailBody = PrepareMailBody(placedOrder);
 			String mailSubject = String.format(Constants.orderSuccessMailSubject, placedOrder.getOrderId());
-			MailService.GetMailServiceObject().sendMail(customer.getEmail(), mailSubject, mailBody);
+			String toAddress;
+			if(customer == null || customer.getEmail()== null)
+				return;
+			else
+				toAddress = customer.getEmail();
+			MailService.GetMailServiceObject().sendMail(toAddress, mailSubject, mailBody);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception("Something wrong went while saving order or sending mail");
 		}
 
 	}
