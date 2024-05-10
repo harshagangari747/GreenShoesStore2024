@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.store.greenShoes.model.Category;
 import com.store.greenShoes.service.CategoryService;
 @RestController
-@CrossOrigin(methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT })
 public class CategoryController {
 	@Autowired
 	CategoryService categoryService;

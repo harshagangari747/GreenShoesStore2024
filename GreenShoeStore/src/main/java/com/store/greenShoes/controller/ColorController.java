@@ -14,7 +14,8 @@ import com.store.greenShoes.model.Color;
 import com.store.greenShoes.repository.ColorRepository;
 
 @RestController
-@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT })
 public class ColorController {
 	@Autowired
 	ColorRepository colorRepository;

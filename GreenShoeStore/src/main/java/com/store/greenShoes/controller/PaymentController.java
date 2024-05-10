@@ -10,7 +10,8 @@ import com.store.greenShoes.model.PaymentRequest;
 import com.store.greenShoes.model.PaymentResponse;
 
 @RestController
-@CrossOrigin(origins="http://localhost:3000",methods = {RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT })
 public class PaymentController {
 
     @PostMapping("/user/simulatePayment")

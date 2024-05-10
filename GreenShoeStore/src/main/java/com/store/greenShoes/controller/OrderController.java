@@ -25,7 +25,7 @@ import com.store.greenShoes.service.OrderService;
 import com.store.greenShoes.service.UtilitiesService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"}, methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST,
 		RequestMethod.PUT })
 public class OrderController {
 	@Autowired
